@@ -20,5 +20,22 @@ module.exports = {
                 });
             }
         });
+    },
+    obtenerOffers : function(criterio, funcionCallback){
+        this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('offers');
+                collection.find(criterio).toArray(function(err, offers) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(offers);
+                    }
+                    db.close();
+                });
+            }
+        });
     }
 };
