@@ -43,6 +43,10 @@ app.set('db','mongodb://admin:admin@cluster0-shard-00-00.urjej.mongodb.net:27017
 app.set('crypto',crypto);
 app.set('clave','abcdefg');
 
+app.get('/', function (req, res) {
+    res.redirect('/tienda');
+})
+
 app.listen(app.get('port'), function() {
     console.log("Servidor activo");
 })

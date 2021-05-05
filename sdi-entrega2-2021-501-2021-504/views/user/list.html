@@ -18,7 +18,8 @@
                 <td>{{ usuario.nombre }}</td>
                 <td>{{ usuario.apellidos }}</td>
                 <td>
-                    <a href="/user/delete/{{ usuario._id.toString() }} ">Eliminar</a> <br>
+                    <input type="checkbox" name=idChecked
+                           class="checkbox" id={usuario.id} value={user.id}>
                 </td>
             </tr>
             {% endfor %}

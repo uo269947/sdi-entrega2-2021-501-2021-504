@@ -64,4 +64,22 @@ module.exports = function(app,swig,gestorBD) {
             }
         });
     });
+
+    /**
+     * Petición get que devuelve una lista de todos los usuarios registrados en el sistema
+     */
+    app.get('/usuario/list', function (req, res) {
+        let criterio = {  };
+        gestorBD.obtenerUsuarios(criterio,function(users){
+            if ( users == null ){
+                res.send(respuesta);
+            } else {
+                let respuesta = swig.renderFile('views/user/list.html',
+                    {
+                        users : users
+                    });
+                res.send(respuesta);
+            }
+        });
+    })
 }

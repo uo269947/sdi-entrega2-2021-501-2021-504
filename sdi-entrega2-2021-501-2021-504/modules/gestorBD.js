@@ -70,5 +70,37 @@ module.exports = {
                 });
             }
         });
+    },eliminarOffer : function(criterio, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('offers');
+                collection.remove(criterio, function(err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result);
+                    }
+                    db.close();
+                });
+            }
+        });
+    }, obtenerBoughtOffers : function(criterio, funcionCallback){
+        this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('boughtOffers');
+                collection.find(criterio).toArray(function(err, boughtOffers) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(boughtOffers);
+                    }
+                    db.close();
+                });
+            }
+        });
     }
 };
