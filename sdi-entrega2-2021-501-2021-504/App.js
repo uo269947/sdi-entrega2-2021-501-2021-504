@@ -57,6 +57,24 @@ routerUsuarioPropietario.use(function (req, res, next) {
 //Aplicamos router UsuarioPropietario
 app.use("/offer/delete", routerUsuarioPropietario);
 
+
+//Router usuario admin
+let routerUsuarioAdmin = express.Router();
+routerUsuarioAdmin.use(function (req, res, next) {
+    console.log("routerUsuarioAdmin");
+
+    if (req.session.rol == "admin")
+        next();
+    else
+        res.redirect("/offer/myOfferList" +
+            "?mensaje=Lo siento no eres admin ;)" +
+            "&tipoMensaje=alert-danger ");
+
+});
+
+//Aplicamos router usuarioAdmin
+app.use("/usuario/list", routerUsuarioAdmin);
+
 require("./routes/rofertas.js")(app, swig, gestorBD);
 require("./routes/rusuarios.js")(app, swig, gestorBD);
 
@@ -77,7 +95,7 @@ app.set('crypto', crypto);
 app.set('clave', 'abcdefg');
 
 app.get('/', function (req, res) {
-    res.redirect('/tienda');
+    res.redirect('/offer/myOfferList');
 })
 
 app.listen(app.get('port'), function () {

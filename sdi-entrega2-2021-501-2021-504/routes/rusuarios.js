@@ -19,7 +19,6 @@ module.exports = function(app,swig,gestorBD) {
             nombre:req.body.name,
             apellidos:req.body.surname,
             password : seguro,
-            money:100,
             rol: "usuario"
         }
 
