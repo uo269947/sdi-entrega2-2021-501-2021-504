@@ -8,7 +8,8 @@ module.exports = function(app, swig, gestorBD) {
             title : req.body.title,
             description : req.body.description,
             price : req.body.price,
-            email: req.session.usuario
+            email: req.session.usuario,
+            buyer: null
         }
 
         gestorBD.insertOffer(offer, function(id){
@@ -113,5 +114,51 @@ module.exports = function(app, swig, gestorBD) {
         });
     })
 
+    app.get("/offer/buy/:id",function(req,res){
+        let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
 
+        gestorBD.obtenerOfertaPorId(criterio, function(ofertas){
+            if(ofertas==null)
+                res.send("Esta oferta no existe");
+            let oferta = ofertas[0]
+
+            if(oferta.email == req.session.usuario) //Comprobamos que la oferta no es de él mismo
+                res.redirect("/offer/otherOfferList" +
+                    "?mensaje=No puedes comprar tu propia oferta" +
+                    "&tipoMensaje=alert-danger ");
+            if(oferta.buyer != null ) //Comprobamos que no esté comprada
+                res.redirect("/offer/otherOfferList" +
+                    "?mensaje=Lo siento esta oferta ya está comprda" +
+                    "&tipoMensaje=alert-danger ");
+            if(parseInt(oferta.price) > req.session.money) //comprobamos si el usuario tiene dinero suficiente
+                res.redirect("/offer/otherOfferList" +
+                    "?mensaje=No tienes dinero suficiente" +
+                    "&tipoMensaje=alert-danger ");
+            req.session.money-=oferta.price;
+            oferta.comprador=req.session.usuario;
+            gestorBD.modificarOferta(criterio,oferta,function (result) { //Modificamos el comprador de la oferta
+                if (result == null) {
+                    res.redirect("/offer/otherOfferList" +
+                        "?mensaje=Error al comprar oferta" +
+                        "&tipoMensaje=alert-danger ");
+                } else {
+                    let usuario = {
+                        money:req.session.money
+                    }
+                    let criterio2 = {"email":req.session.usuario}
+                    gestorBD.modificarUsuario(criterio2,usuario,function (result) {
+                        if (result == null)
+                            res.redirect("/offer/otherOfferList" +
+                                "?mensaje=Error al comprar oferta" +
+                                "&tipoMensaje=alert-danger ");
+                         else
+                            res.redirect("/offer/otherOfferList");
+
+                    })
+                }
+            })
+
+        });
+
+    })
 };

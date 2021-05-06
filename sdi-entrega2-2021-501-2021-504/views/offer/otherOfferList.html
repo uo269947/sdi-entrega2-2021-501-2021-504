@@ -34,7 +34,11 @@
                 <td>{{ offer.description }}</td>
                 <td>{{ offer.price }}</td>
                 <td>
-                    <a href="/offer/buy/{{ offer._id.toString() }} ">Comprar</a> <br>
+                    {% if offer.comprador == null%}
+                        <a href="/offer/buy/{{ offer._id.toString() }} ">Comprar</a> <br>
+                    {% else %}
+                        Oferta ya comprada
+                    {% endif%}
                 </td>
             </tr>
             {% endfor %}

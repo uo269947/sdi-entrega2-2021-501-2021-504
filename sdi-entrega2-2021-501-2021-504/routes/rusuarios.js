@@ -88,4 +88,14 @@ module.exports = function(app,swig,gestorBD) {
             }
         });
     })
+
+    /**
+     * Peticion get para desconectarse
+     */
+    app.get('/desconectarse', function (req, res) {
+        req.session.usuario = null;
+        req.session.money=null;
+        req.session.rol=null;
+        res.send("Usuario desconectado");
+    })
 }
