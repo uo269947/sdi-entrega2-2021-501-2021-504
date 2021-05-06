@@ -68,14 +68,36 @@ module.exports = function(app, swig, gestorBD) {
      * diferentes al que está en sesión y que se pueden comprar
      */
     app.get('/offer/otherOfferList', function (req, res) {
-        let criterio = { "usuario" : {$ne: req.session.usuario } };
-        gestorBD.obtenerOffers(criterio,function(offers){
+        let criterio = { "email" : {$ne: req.session.usuario } };
+
+        if (req.query.busqueda != null){
+            criterio = { "email" : {$ne: req.session.usuario }, "title" : {$regex : ".*"+req.query.busqueda+".*"}};
+        }
+        let pg = parseInt(req.query.pg); // Es String !!!
+        if ( req.query.pg == null){ // Puede no venir el param
+            pg = 1;
+        }
+
+
+        gestorBD.obtenerOffersPageable(criterio,pg,function(offers,total){
             if ( offers == null ){
-                res.send(respuesta);
+                res.send("Error al obtener ofertas");
             } else {
+                let ultimaPg = total/4;
+                if (total % 4 > 0 ){ // Sobran decimales
+                    ultimaPg = ultimaPg+1;
+                }
+                let paginas=[];
+                for(let i = pg-2 ; i <= pg+2 ; i++){
+                    if ( i > 0 && i <= ultimaPg){
+                        paginas.push(i);
+                    }
+                }
                 let respuesta = swig.renderFile('views/offer/otherOfferList.html',
                     {
-                        offers : offers
+                        offers : offers,
+                        paginas: paginas,
+                        actual: pg
                     });
                 res.send(respuesta);
             }
