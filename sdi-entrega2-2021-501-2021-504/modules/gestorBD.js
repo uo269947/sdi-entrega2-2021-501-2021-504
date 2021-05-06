@@ -10,7 +10,7 @@ module.exports = {
                 funcionCallback(null);
             } else {
                 let collection = db.collection('offers');
-                collection.insertOne(oferta, function(err, result) {
+                collection.insert(offer, function(err, result) {
                     if (err) {
                         funcionCallback(null);
                     } else {

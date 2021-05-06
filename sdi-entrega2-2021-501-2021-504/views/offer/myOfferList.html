@@ -1,19 +1,14 @@
-{% extends "base.html" %} {% block titulo %} Mis Ofertas {% endblock %} {% block contenido_principal %}
+{% extends "../base.html" %} {% block titulo %} Mis Ofertas {% endblock %} {% block contenido_principal %}
 <h2>Mis Ofertas </h2>
 
 <!-- Agregar Usuario -->
 <div class="row">
     <div id="custom-search-input ">
-        <form method="get" action="/tienda">
+
             <div class="input-group col-xs-8 col-sm-6 col-md-4 col-lg-5 pull-right">
-                <input type="text" class="search-query form-control" placeholder="Buscar oferta propia" name="busqueda" />
-                <span class="input-group-btn">
-                    <button class="btn" type="submit">
-                        <span class="glyphicon glyphicon-search"></span>
-                </button>
-                </span>
+                <a href="/offer" class="btn btn-primary active">Añadir oferta</a>
+
             </div>
-        </form>
     </div>
 </div>
 

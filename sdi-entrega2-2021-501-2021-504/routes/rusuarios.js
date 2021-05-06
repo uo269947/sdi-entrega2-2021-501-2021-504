@@ -19,7 +19,8 @@ module.exports = function(app,swig,gestorBD) {
             nombre:req.body.name,
             apellidos:req.body.surname,
             password : seguro,
-            money:100
+            money:100,
+            rol: "usuario"
         }
 
         gestorBD.insertarUsuario(usuario, function(id) {
@@ -52,6 +53,10 @@ module.exports = function(app,swig,gestorBD) {
             email : req.body.email,
             password : seguro
         }
+
+
+
+
         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
             if (usuarios == null || usuarios.length == 0) {
                 req.session.usuario = null;
@@ -60,7 +65,9 @@ module.exports = function(app,swig,gestorBD) {
                     "&tipoMensaje=alert-danger ");
             } else {
                 req.session.usuario = usuarios[0].email;
-                res.redirect("/publicaciones");
+                req.session.rol = usuarios[0].rol;
+                req.session.money = usuarios[0].money;
+                res.redirect("/offer/myOfferList");
             }
         });
     });
