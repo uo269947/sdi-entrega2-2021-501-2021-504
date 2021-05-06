@@ -79,7 +79,7 @@ module.exports = function(app,swig,gestorBD) {
         let criterio = {  };
         gestorBD.obtenerUsuarios(criterio,function(users){
             if ( users == null ){
-                res.send(respuesta);
+                res.send("Error al listar usuarios");
             } else {
                 let respuesta = swig.renderFile('views/user/list.html',
                     {

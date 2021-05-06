@@ -26,7 +26,9 @@ module.exports = function(app, swig, gestorBD) {
      * Petición post que muestra el formulario para añddir una oferta
      */
     app.get("/offer", function(req, res) {
-        let respuesta = swig.renderFile('views/offer/add.html', {});
+        let respuesta = swig.renderFile('views/offer/add.html', {rol: req.session.rol,
+            usuario: req.session.usuario,
+            money: req.session.money});
         res.send(respuesta);
 
     });
@@ -56,7 +58,11 @@ module.exports = function(app, swig, gestorBD) {
             } else {
                 let respuesta = swig.renderFile('views/offer/myOfferList.html',
                     {
-                        offers : offers
+                        offers : offers,
+                        rol: req.session.rol,
+                        usuario: req.session.usuario,
+                        money: req.session.money
+
                     });
                 res.send(respuesta);
             }
@@ -97,7 +103,10 @@ module.exports = function(app, swig, gestorBD) {
                     {
                         offers : offers,
                         paginas: paginas,
-                        actual: pg
+                        actual: pg,
+                        rol: req.session.rol,
+                        usuario: req.session.usuario,
+                        money: req.session.money
                     });
                 res.send(respuesta);
             }
