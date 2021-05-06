@@ -113,7 +113,7 @@ module.exports = {
             if (err) {
                 funcionCallback(null);
             } else {
-                let collection = db.collection('boughtOffers');
+                let collection = db.collection('offers');
                 collection.find(criterio).toArray(function (err, boughtOffers) {
                     if (err) {
                         funcionCallback(null);

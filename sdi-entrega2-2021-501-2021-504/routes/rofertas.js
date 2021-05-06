@@ -114,6 +114,9 @@ module.exports = function(app, swig, gestorBD) {
         });
     })
 
+    /**
+     * Método get que compra una oferta con a partir de un ID
+     */
     app.get("/offer/buy/:id",function(req,res){
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
 
@@ -160,5 +163,26 @@ module.exports = function(app, swig, gestorBD) {
 
         });
 
-    })
+    });
+    /**
+     * Método get que muestra la vista de ofertas compradas
+     */
+    app.get("/offer/boughtOfferList",function(req,res) {
+        let criterio = {"comprador": req.session.usuario};
+        gestorBD.obtenerBoughtOffers(criterio,function (offers) {
+            if (offers == null) {
+                res.send("Error en la bd");
+            }else{
+                let respuesta = swig.renderFile('views/offer/boughtOfferList.html',
+                    {
+                        offers : offers,
+                        rol: req.session.rol,
+                        usuario: req.session.usuario,
+                        money: req.session.money
+
+                    });
+                res.send(respuesta);
+            }
+        })
+    });
 };

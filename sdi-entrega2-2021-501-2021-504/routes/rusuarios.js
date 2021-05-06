@@ -96,6 +96,6 @@ module.exports = function(app,swig,gestorBD) {
         req.session.usuario = null;
         req.session.money=null;
         req.session.rol=null;
-        res.send("Usuario desconectado");
+        res.redirect("/identificarse");
     })
 }
