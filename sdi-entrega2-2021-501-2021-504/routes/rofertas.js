@@ -4,23 +4,30 @@ module.exports = function(app, swig, gestorBD) {
      * Petición post que controla el añadir una oferta nueva a la aplicación
      */
     app.post("/offer/add", function(req, res) {
-        let offer = {
-            title : req.body.title,
-            description : req.body.description,
-            price : req.body.price,
-            email: req.session.usuario,
-            buyer: null
+        if (req.body.title.length <= 0 || req.body.description.length <= 0 || req.body.price.length <= 0 ) {
+            res.redirect("/offer/add?mensaje=Los campos no pueden estar vacíos");
         }
-
-        gestorBD.insertOffer(offer, function(id){
-            if (id == null) {
-                res.send("Error al insertar oferta");
+        else if (req.body.price <= 0) {
+            res.redirect("/offer/add?mensaje=El precio no puede ser menor o igual a 0");
+        }
+        else {
+            let offer = {
+                title : req.body.title,
+                description : req.body.description,
+                price : req.body.price,
+                email: req.session.usuario,
+                buyer: null
             }
-            else{
-                res.redirect("/offer/myOfferList");
-            }
-        });
 
+            gestorBD.insertOffer(offer, function(id){
+                if (id == null) {
+                    res.send("Error al insertar oferta");
+                }
+                else{
+                    res.redirect("/offer/myOfferList");
+                }
+            });
+        }
     });
 
     /**

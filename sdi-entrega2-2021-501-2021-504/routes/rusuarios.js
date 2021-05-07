@@ -14,23 +14,34 @@ module.exports = function(app,swig,gestorBD) {
     app.post('/usuario', function(req, res) {
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
-        let usuario = {
-            email : req.body.email,
-            nombre:req.body.name,
-            apellidos:req.body.surname,
-            password : seguro,
-            money: 100,
-            rol: "usuario"
+        if (req.body.password.length < 8) {
+            res.redirect("/registrarse?mensaje=La contraseña debe tener al menos 8 caracteres");
+        }
+        else if (req.body.password != req.body.password2) {
+            res.redirect("/registrarse?mensaje=Las contraseñas no coinciden");
+        }
+        else if (req.body.name.length <= 0 || req.body.email.length <= 0 || req.body.surname.length <= 0 ){
+            res.redirect("/registrarse?mensaje=Los campos no pueden estar vacíos");
+        }
+        else {
+            let usuario = {
+                email : req.body.email,
+                nombre:req.body.name,
+                apellidos:req.body.surname,
+                password : seguro,
+                money: 100,
+                rol: "usuario"
+            }
+
+            gestorBD.insertarUsuario(usuario, function(id) {
+                if (id == null){
+                    res.redirect("/registrarse?mensaje=Error al registrar usuario");
+                } else {
+                    res.redirect("/identificarse?mensaje=Nuevo usuario registrado");
+                }
+            });
         }
 
-        gestorBD.insertarUsuario(usuario, function(id) {
-            if (id == null){
-
-                res.redirect("/registrarse?mensaje=Error al registrar usuario");
-            } else {
-                res.redirect("/identificarse?mensaje=Nuevo usuario registrado");
-            }
-        });
 
 
     });

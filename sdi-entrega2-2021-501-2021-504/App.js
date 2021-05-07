@@ -38,7 +38,7 @@ routerUsuarioSession.use(function (req, res, next) {
 });
 
 //Aplicar routerUsuarioSession
-app.use("/offer/add", routerUsuarioSession);
+app.use("/offer", routerUsuarioSession);
 
 //router UsuarioPropietario
 let routerUsuarioPropietario = express.Router();
@@ -121,6 +121,13 @@ app.get('/', function (req, res) {
         res.redirect('/offer/myOfferList');
     else if (req.session.rol == "admin")
         res.redirect('/usuario/list');
+})
+
+app.get('/usuario', function (req, res) {
+    if (req.session.rol == null)
+        res.redirect('/identificarse');
+    else
+        res.redirect('/inicio');
 })
 
 app.listen(app.get('port'), function () {
