@@ -2,6 +2,10 @@
 let express = require('express');
 let app = express();
 
+let jwt = require('jsonwebtoken');
+app.set('jwt',jwt);
+
+
 //Módulo express-session
 let expressSession = require('express-session');
 app.use(expressSession({
@@ -23,6 +27,44 @@ let mongo = require('mongodb');
 let gestorBD = require("./modules/gestorBD.js");
 gestorBD.init(app, mongo);
 
+//routerUsuarioToken
+// routerUsuarioToken
+let routerUsuarioToken = express.Router();
+routerUsuarioToken.use(function(req, res, next) {
+    // obtener el token, vía headers (opcionalmente GET y/o POST).
+    let token = req.headers['token'] || req.body.token || req.query.token;
+    if (token != null) {
+        // verificar el token
+        jwt.verify(token, 'secreto', function(err, infoToken) {
+            if (err || (Date.now()/1000 - infoToken.tiempo) > 240 ){
+                res.status(403); // Forbidden
+                res.json({
+                    acceso : false,
+                    error: 'Token invalido o caducado'
+                });
+                // También podríamos comprobar que intoToken.usuario existe
+                return;
+
+            } else {
+                // dejamos correr la petición
+                res.usuario = infoToken.usuario;
+                next();
+            }
+        });
+
+    } else {
+        res.status(403); // Forbidden
+        res.json({
+            acceso : false,
+            mensaje: 'No hay Token'
+        });
+    }
+});
+
+// Aplicar routerUsuarioToken
+app.use('/api/offer', routerUsuarioToken);
+
+
 // routerUsuarioSession
 var routerUsuarioSession = express.Router();
 
@@ -38,7 +80,7 @@ routerUsuarioSession.use(function (req, res, next) {
 });
 
 //Aplicar routerUsuarioSession
-app.use("/offer/add", routerUsuarioSession);
+app.use("/offer", routerUsuarioSession);
 
 //router UsuarioPropietario
 let routerUsuarioPropietario = express.Router();
@@ -97,7 +139,8 @@ app.use("/offer/otherOfferList", routerUsuarioNotAdmin);
 
 require("./routes/rofertas.js")(app, swig, gestorBD);
 require("./routes/rusuarios.js")(app, swig, gestorBD);
-
+require("./routes/rapiusuarios.js")(app,gestorBD);
+require("./routes/rapiofertas.js")(app,gestorBD);
 
 app.use(function (err, req, res, next) {
     console.log("Error producido: " + err);//mostramos el error en consola
