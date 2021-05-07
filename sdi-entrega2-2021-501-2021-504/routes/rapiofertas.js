@@ -58,5 +58,35 @@ module.exports = function (app, gestorBD) {
 
     });
 
+    /**
+     * Devuelve los mensajes de una conversación a partir de un id de oferta
+     */
+    app.get("/api/offer/message/:id/:destinatario",function (req,res){
+        let email = req.res.usuario;
+
+        //let criterio = {"oferta_id": gestorBD.mongo.ObjectID(req.params.id)
+          //              ,$or:[{"propietario":email},{"interesado":email}]}
+        let criterio = {"oferta_id": gestorBD.mongo.ObjectID(req.params.id)
+                          ,$or:[
+                              {"propietario":email,"interesado":req.params.destinatario},
+                            {"interesado":email}]}
+
+        gestorBD.obtenerMensajes(criterio, function (messages) {
+            console.log(messages[0]);
+            if (messages == null) {
+                res.status(500);
+                res.json({
+                    error: "se ha producido un error"
+                })
+            } else {
+                res.status(201);
+                res.json({
+                    mensajes: messages
+                })
+            }
+        });
+
+    });
+
 
 }
