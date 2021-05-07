@@ -20,6 +20,22 @@ module.exports = {
                 });
             }
         });
+    }, insertarMensaje: function (message, funcionCallback) {
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('messages');
+                collection.insert(message, function (err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result.ops[0]._id);
+                    }
+                    db.close();
+                });
+            }
+        });
     }, insertarUsuario: function (usuario, funcionCallback) {
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err) {
@@ -188,6 +204,23 @@ module.exports = {
                     db.close();
                 });
             }
+        });
+    }, obtenerMensajes: function(criterio,funcionCallback){
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err)
+                funcionCallback(null);
+            else{
+                let collection = db.collection('messages');
+                collection.find(criterio).toArray(function (err, messages) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(messages);
+                    }
+                    db.close();
+                });
+            }
+
         });
     }
 };
