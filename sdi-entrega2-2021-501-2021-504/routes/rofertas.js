@@ -3,7 +3,7 @@ module.exports = function(app, swig, gestorBD) {
     /**
      * Petición post que controla el añadir una oferta nueva a la aplicación
      */
-    app.post("/offer", function(req, res) {
+    app.post("/offer/add", function(req, res) {
         let offer = {
             title : req.body.title,
             description : req.body.description,
@@ -26,7 +26,7 @@ module.exports = function(app, swig, gestorBD) {
     /**
      * Petición post que muestra el formulario para añddir una oferta
      */
-    app.get("/offer", function(req, res) {
+    app.get("/offer/add", function(req, res) {
         let respuesta = swig.renderFile('views/offer/add.html', {rol: req.session.rol,
             usuario: req.session.usuario,
             money: req.session.money});

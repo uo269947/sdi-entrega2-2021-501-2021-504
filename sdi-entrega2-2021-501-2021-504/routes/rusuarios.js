@@ -19,6 +19,7 @@ module.exports = function(app,swig,gestorBD) {
             nombre:req.body.name,
             apellidos:req.body.surname,
             password : seguro,
+            money: 100,
             rol: "usuario"
         }
 
@@ -52,10 +53,6 @@ module.exports = function(app,swig,gestorBD) {
             email : req.body.email,
             password : seguro
         }
-
-
-
-
         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
             if (usuarios == null || usuarios.length == 0) {
                 req.session.usuario = null;
@@ -66,7 +63,7 @@ module.exports = function(app,swig,gestorBD) {
                 req.session.usuario = usuarios[0].email;
                 req.session.rol = usuarios[0].rol;
                 req.session.money = usuarios[0].money;
-                res.redirect("/offer/myOfferList");
+                res.redirect("/");
             }
         });
     });
@@ -75,19 +72,35 @@ module.exports = function(app,swig,gestorBD) {
      * Petición get que devuelve una lista de todos los usuarios registrados en el sistema
      */
     app.get('/usuario/list', function (req, res) {
-        let criterio = {  };
+        let criterio = { "email" : {$ne: "admin@admin.es" } };
         gestorBD.obtenerUsuarios(criterio,function(users){
             if ( users == null ){
                 res.send("Error al listar usuarios");
             } else {
                 let respuesta = swig.renderFile('views/user/list.html',
                     {
-                        users : users
+                        users : users,
+                        rol: req.session.rol,
+                        usuario: req.session.usuario
                     });
                 res.send(respuesta);
             }
         });
     })
+
+    /**
+     * Petición post que elimina los usuarios seleccionados en el html
+     */
+    app.post("/usuario/delete", function(req, res) {
+        let criterio = {"email" : {"$in" : req.body.idChecked}};
+        gestorBD.eliminarUsuarios(criterio,function(users){
+            if ( users === null || users.length <= 0){
+                res.redirect("/usuario/list?mensaje=Error al eliminar usuarios");
+            } else {
+                res.redirect("/usuario/list?mensaje=Usuarios eliminados");
+            }
+        });
+    });
 
     /**
      * Peticion get para desconectarse

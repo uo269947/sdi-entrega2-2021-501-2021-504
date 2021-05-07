@@ -25,6 +25,7 @@ gestorBD.init(app, mongo);
 
 // routerUsuarioSession
 var routerUsuarioSession = express.Router();
+
 routerUsuarioSession.use(function (req, res, next) {
     console.log("routerUsuarioSession");
     if (req.session.usuario) {
@@ -35,8 +36,9 @@ routerUsuarioSession.use(function (req, res, next) {
         res.redirect("/identificarse");
     }
 });
+
 //Aplicar routerUsuarioSession
-app.use("/offer", routerUsuarioSession);
+app.use("/offer/add", routerUsuarioSession);
 
 //router UsuarioPropietario
 let routerUsuarioPropietario = express.Router();
@@ -72,8 +74,26 @@ routerUsuarioAdmin.use(function (req, res, next) {
 
 });
 
+//Router usuario admin
+let routerUsuarioNotAdmin = express.Router();
+routerUsuarioNotAdmin.use(function (req, res, next) {
+    console.log("routerUsuarioNotAdmin");
+
+    if (req.session.rol != "admin")
+        next();
+    else
+        res.redirect("/usuario/list" +
+            "?mensaje=Lo siento eres admin " +
+            "&tipoMensaje=alert-danger ");
+
+});
+
 //Aplicamos router usuarioAdmin
 app.use("/usuario/list", routerUsuarioAdmin);
+
+app.use("/offer/myOfferList", routerUsuarioNotAdmin);
+app.use("/offer/boughtOfferList", routerUsuarioNotAdmin);
+app.use("/offer/otherOfferList", routerUsuarioNotAdmin);
 
 require("./routes/rofertas.js")(app, swig, gestorBD);
 require("./routes/rusuarios.js")(app, swig, gestorBD);
@@ -95,7 +115,12 @@ app.set('crypto', crypto);
 app.set('clave', 'abcdefg');
 
 app.get('/', function (req, res) {
-    res.redirect('/offer/myOfferList');
+    if (req.session.rol == null)
+        res.redirect('/identificarse');
+    else if (req.session.rol == "usuario")
+        res.redirect('/offer/myOfferList');
+    else if (req.session.rol == "admin")
+        res.redirect('/usuario/list');
 })
 
 app.listen(app.get('port'), function () {

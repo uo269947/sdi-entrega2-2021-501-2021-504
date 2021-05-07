@@ -29,12 +29,11 @@
             <ul class="nav navbar-nav">
             {% if usuario != null %}
                 {% if rol == "usuario" %} <!-- Mostramos solo las funciones de usuario-->
-
                       <li id="misOfertas"><a href="/offer/myOfferList">Mis Ofertas</a></li>
                       <li id="ofertas"><a href="/offer/otherOfferList">Ofertas</a></li>
-                         <li id="ofertasCompradas"><a href="/offer/boughtOfferList">Ofertas compradas</a></li>
+                      <li id="ofertasCompradas"><a href="/offer/boughtOfferList">Ofertas compradas</a></li>
                 {% else %}
-                <li id="gestionUsuarios"><a href="/usuario/list">Listar usuarios</a></li>
+                    <li id="gestionUsuarios"><a href="/usuario/list">Listar usuarios</a></li>
                 {% endif %}
 
             {% endif %}

@@ -2,29 +2,36 @@
 <h2>Usuarios del sistema </h2>
 
 <div class="table-responsive">
-    <table class="table table-hover">
-        <thead>
+    <form  class="form-horizontal" method="post" action="/usuario/delete">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Eliminar Seleccionados</button>
+            </div>
+        </div>
+        <table class="table table-hover">
+         <thead>
             <tr>
                 <th>Email</th>
                 <th>Nombre</th>
                 <th>Apellidos</th>
                 <th class="col-md-1"></th>
             </tr>
-        </thead>
-        <tbody>
-            {% for usuario in usuarios %}
+         </thead>
+            <tbody>
+            {% for usuario in users %}
             <tr>
                 <td>{{ usuario.email }}</td>
                 <td>{{ usuario.nombre }}</td>
                 <td>{{ usuario.apellidos }}</td>
                 <td>
-                    <input type="checkbox" name=idChecked
-                           class="checkbox" id={usuario.id} value={user.id}>
+                    <input type="checkbox" name="idChecked"
+                           class="checkbox" id="idChecked" value={{usuario.email}}>
                 </td>
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
+         </tbody>
+        </table>
+    </form>
 </div>
 
 {% endblock %}
