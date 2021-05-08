@@ -36,7 +36,8 @@ module.exports = function(app,swig,gestorBD) {
 
             gestorBD.insertarUsuario(usuario, function(id) {
                 if (id == null){
-                    res.redirect("/registrarse?mensaje=Error al registrar usuario");
+                    res.redirect("/registrarse?mensaje=Error al registrar usuario"+
+                    "&tipoMensaje=alert-danger");
                 } else {
                     req.session.usuario = usuario.email;
                     req.session.rol = usuario.rol;
