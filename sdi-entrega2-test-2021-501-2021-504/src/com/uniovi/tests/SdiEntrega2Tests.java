@@ -1,247 +1,391 @@
 package com.uniovi.tests;
+
+import static org.junit.Assert.assertTrue;
+
 //Paquetes Java
 import java.util.List;
+
 //Paquetes JUnit 
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import static org.junit.Assert.assertTrue;
 //Paquetes Selenium 
-import org.openqa.selenium.*;
-import org.openqa.selenium.firefox.*;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+//Paquetes con los Page Object
+import com.uniovi.tests.pageobjects.PO_HomeView;
+import com.uniovi.tests.pageobjects.PO_LoginView;
+import com.uniovi.tests.pageobjects.PO_PrivateView;
+import com.uniovi.tests.pageobjects.PO_RegisterView;
+import com.uniovi.tests.pageobjects.PO_View;
 //Paquetes Utilidades de Testing Propias
 import com.uniovi.tests.util.SeleniumUtils;
-//Paquetes con los Page Object
-import com.uniovi.tests.pageobjects.*;
-
 
 //Ordenamos las pruebas por el nombre del mÃ©todo
-@FixMethodOrder(MethodSorters.NAME_ASCENDING) 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SdiEntrega2Tests {
-	//En Windows (Debe ser la versiÃ³n 65.0.1 y desactivar las actualizacioens automÃ¡ticas)):
-	//static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
-	//static String Geckdriver024 = "C:\\Path\\geckodriver024win64.exe";
-	//En MACOSX (Debe ser la versiÃ³n 65.0.1 y desactivar las actualizacioens automÃ¡ticas):
+	// En Windows (Debe ser la versiÃ³n 65.0.1 y desactivar las actualizacioens
+	// automÃ¡ticas)):
+	// static String PathFirefox65 = "C:\\Program Files\\Mozilla
+	// Firefox\\firefox.exe";
+	// static String Geckdriver024 = "C:\\Path\\geckodriver024win64.exe";
+	// En MACOSX (Debe ser la versiÃ³n 65.0.1 y desactivar las actualizacioens
+	// automÃ¡ticas):
 	static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 	static String Geckdriver024 = "C:\\Users\\Eric\\Desktop\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
-	//static String Geckdriver024 =
-		//	 "C:\\Users\\aleex\\Desktop\\UniTercero2\\SDI\\Material\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
-	
-	
-	//static String Geckdriver022 = "/Users/delacal/Documents/SDI1718/firefox/geckodriver023mac";
-	//ComÃºn a Windows y a MACOSX
-	static WebDriver driver = getDriver(PathFirefox65, Geckdriver024); 
+	// static String Geckdriver024 =
+	// "C:\\Users\\aleex\\Desktop\\UniTercero2\\SDI\\Material\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
+
+	// static String Geckdriver022 =
+	// "/Users/delacal/Documents/SDI1718/firefox/geckodriver023mac";
+	// ComÃºn a Windows y a MACOSX
+	static WebDriver driver = getDriver(PathFirefox65, Geckdriver024);
 	static String URL = "http://localhost:8081";
 
-
+	private String emailRegistrado;
+	
 	public static WebDriver getDriver(String PathFirefox, String Geckdriver) {
+	
+		
 		System.setProperty("webdriver.firefox.bin", PathFirefox);
 		System.setProperty("webdriver.gecko.driver", Geckdriver);
 		WebDriver driver = new FirefoxDriver();
 		return driver;
 	}
 
-
 	@Before
-	public void setUp(){
+	public void setUp() {
+		initdb();
 		driver.navigate().to(URL);
 	}
+
+	public void initdb() {
+		//Unicamente elimina las ofertas anteriores
+		MongoClient mongoClient = MongoClients.create(
+			    "mongodb+srv://admin:admin@cluster0.urjej.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
+		MongoDatabase database = mongoClient.getDatabase("myFirstDatabase");
+		database.getCollection("offers").drop();
+		
+	}
+	
 	@After
-	public void tearDown(){
+	public void tearDown() {
 		driver.manage().deleteAllCookies();
 	}
-	@BeforeClass 
+
+	@BeforeClass
 	static public void begin() {
-		//COnfiguramos las pruebas.
-		//Fijamos el timeout en cada opciÃ³n de carga de una vista. 2 segundos.
+		// COnfiguramos las pruebas.
+		// Fijamos el timeout en cada opciÃ³n de carga de una vista. 2 segundos.
 		PO_View.setTimeout(3);
 
 	}
+
 	@AfterClass
 	static public void end() {
-		//Cerramos el navegador al finalizar las pruebas
+		// Cerramos el navegador al finalizar las pruebas
 		driver.quit();
 	}
 
-	//PR01. Resgitro de Usuario con datos validos
+	// PR01. Resgitro de Usuario con datos validos
 	@Test
 	public void PR01() {
+		
+		
+		
 		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
-		PO_RegisterView.fillForm(driver, "prueba"+Math.random()*10+"@uniovi.es", "Charles", "Leclerc", "ferrari12", "ferrari12");
-		PO_View.checkElement(driver, "h2", "Mis Ofertas");			
+		
+		emailRegistrado ="prueba" + Math.random() * 10+ "@uniovi.es";
+		PO_RegisterView.fillForm(driver, emailRegistrado, "Charles", "Leclerc",
+				"ferrari12", "ferrari12");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
 	}
 
-	//PR02. Sin hacer /
+	// PR02. Registro de usuario con datos invalidos email, nombre y apellidos
+	// vacios
 	@Test
 	public void PR02() {
-		assertTrue("PR02 sin hacer", false);			
+		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
+		PO_RegisterView.fillForm(driver, "", "", "", "ferrari12", "ferrari12");
+		SeleniumUtils.textoPresentePagina(driver, "Completa este campo");
 	}
 
-	//PR03. Sin hacer /
+	// PR03. Resgistro de usuario con datos invalidos repeteicion de contraseña
+	// invalida
 	@Test
 	public void PR03() {
-		assertTrue("PR03 sin hacer", false);			
+		assertTrue("PR03 sin hacer", false);
 	}
-	
-	//PR04. Sin hacer /
+
+	// PR04. Registro de usuario con datos invalidos
 	@Test
 	public void PR04() {
-		assertTrue("PR04 sin hacer", false);			
+		assertTrue("PR04 sin hacer", false);
 	}
-	
-	//PR05. Sin hacer /
+
+	// PR05. Inicio de sesion con datos validos
 	@Test
 	public void PR05() {
-		assertTrue("PR05 sin hacer", false);			
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
 	}
-	
-	//PR06. Sin hacer /
+
+	// PR06. Inicio de sesión con datos inválidos (email existente, pero contraseña
+	// incorrecta).
 	@Test
 	public void PR06() {
-		assertTrue("PR06 sin hacer", false);			
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba121212");
+		PO_View.checkElement(driver, "text", "Email o password incorrecto");
 	}
-	
-	//PR07. Sin hacer /
+
+	// PR07. Inicio de sesión con datos inválidos (campo email o contraseña
+	// vacíos)./
 	@Test
 	public void PR07() {
-		assertTrue("PR07 sin hacer", false);			
-	}	
-	
-	//PR08. Sin hacer /
+		assertTrue("PR07 sin hacer", false);
+	}
+
+	// PR08. Inicio de sesión con datos inválidos (email no existente en la
+	// aplicación).
 	@Test
 	public void PR08() {
-		assertTrue("PR08 sin hacer", false);			
-	}	
-	
-	//PR09. Sin hacer /
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "inventado@prueba.es", "prueba121212");
+		PO_View.checkElement(driver, "text", "Email o password incorrecto");
+	}
+
+	// PR09. Sin hacer /
 	@Test
 	public void PR09() {
-		assertTrue("PR09 sin hacer", false);			
-	}	
-	//PR10. Sin hacer /
+		assertTrue("PR09 sin hacer", false);
+	}
+
+	// PR10. Sin hacer /
 	@Test
 	public void PR10() {
-		assertTrue("PR10 sin hacer", false);			
-	}	
-	
-	//PR11. Sin hacer /
+		assertTrue("PR10 sin hacer", false);
+	}
+
+	// PR11.] Mostrar el listado de usuarios y comprobar que se muestran todos los
+	// que existen en el sistema.
 	@Test
 	public void PR11() {
-		assertTrue("PR11 sin hacer", false);			
-	}	
-	
-	//PR12. Sin hacer /
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
+		PO_View.checkElement(driver, "h2", "Usuarios del sistema");
+		
+		PO_View.checkElement(driver, "text","prueba@prueba.es" );
+	//	PO_View.checkElement(driver, "text",emailRegistrado );
+	}
+
+	// PR12. Sin hacer /
 	@Test
 	public void PR12() {
-		assertTrue("PR12 sin hacer", false);			
-	}	
-	
-	//PR13. Sin hacer /
+		assertTrue("PR12 sin hacer", false);
+	}
+
+	// PR13. Sin hacer /
 	@Test
 	public void PR13() {
-		assertTrue("PR13 sin hacer", false);			
-	}	
-	
-	//PR14. Sin hacer /
+		assertTrue("PR13 sin hacer", false);
+	}
+
+	// PR14. Sin hacer /
 	@Test
 	public void PR14() {
-		assertTrue("PR14 sin hacer", false);			
-	}	
-	
-	//PR15. Sin hacer /
+		assertTrue("PR14 sin hacer", false);
+	}
+
+	// PR15. Ir al formulario de alta de oferta, rellenarla con datos válidos y
+	// pulsar el botón Submit. Comprobar que la oferta sale en el listado de
+	// ofertas de dicho usuario.
 	@Test
 	public void PR15() {
-		assertTrue("PR15 sin hacer", false);			
-	}	
-	
-	//PR16. Sin hacer /
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba");
+		PO_PrivateView.clickAddOffer(driver);
+		PO_PrivateView.fillFormAddOffer(driver, "Movil", "Samsung", 10);
+		PO_View.checkElement(driver, "text","Movil" );
+	}
+
+	// PR16. Ir al formulario de alta de oferta, rellenarla con datos inválidos
+	// (campo título vacío y precio en negativo) y
+	//pulsar el botón Submit. Comprobar que se muestra el mensaje de campo
 	@Test
 	public void PR16() {
-		assertTrue("PR16 sin hacer", false);			
-	}	
-	
-	//PR017. Sin hacer /
+		assertTrue("PR16 sin hacer", false);
+	}
+
+	// PR017. Sin hacer /
 	@Test
 	public void PR17() {
-		assertTrue("PR17 sin hacer", false);			
-	}	
-	
-	//PR18. Sin hacer /
+		assertTrue("PR17 sin hacer", false);
+	}
+
+	// PR18. Ir a la lista de ofertas, borrar la primera oferta de la lista,
+	// comprobar que la lista se
+	// actualiza y que la oferta desaparece.
 	@Test
 	public void PR18() {
-		assertTrue("PR18 sin hacer", false);			
-	}	
-	
-	//PR19. Sin hacer /
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba");
+		
+		List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+				"//tbody/tr/td/a", PO_View.getTimeout());
+		int size1 = elementos.size();
+		
+		elementos.get(0).click();
+		//PO_PrivateView.deleteFirstOfferFromList(driver,"Movil");
+		
+		elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+				"//tbody/tr/td/a", PO_View.getTimeout());
+		int size2 = elementos.size();
+		
+		assertTrue(size1>size2);
+	}
+
+	// PR19.Ir a la lista de ofertas, borrar la última oferta de la lista, comprobar
+	// que la lista se actualiza
+	// y que la oferta desaparece.
 	@Test
 	public void PR19() {
-		assertTrue("PR19 sin hacer", false);			
-	}	
-	
-	//P20. Sin hacer /
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba");
+		
+		List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+				"//tbody/tr/td/a", PO_View.getTimeout());
+		int size1 = elementos.size();
+		
+		elementos.get(elementos.size()-1).click();
+		
+		elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
+				"//tbody/tr/td/a", PO_View.getTimeout());
+		int size2 = elementos.size();
+		
+		assertTrue(size1>size2);
+	}
+
+	// P20. Sin hacer /
 	@Test
 	public void PR20() {
-		assertTrue("PR20 sin hacer", false);			
-	}	
-	
-	//PR21. Sin hacer /
+		assertTrue("PR20 sin hacer", false);
+	}
+
+	// PR21. Sin hacer /
 	@Test
 	public void PR21() {
-		assertTrue("PR21 sin hacer", false);			
-	}	
-	
-	//PR22. Sin hacer /
+		assertTrue("PR21 sin hacer", false);
+	}
+
+	// PR22. Sin hacer /
 	@Test
 	public void PR22() {
-		assertTrue("PR22 sin hacer", false);			
-	}	
-	
-	//PR23. Sin hacer /
+		assertTrue("PR22 sin hacer", false);
+	}
+
+	// PR23.Sobre una búsqueda determinada (a elección de desarrollador), comprar
+	// una oferta que
+	// deja un saldo positivo en el contador del comprobador. Y comprobar que el
+	// contador se
+	// actualiza correctamente en la vista del comprador.
 	@Test
 	public void PR23() {
-		assertTrue("PR23 sin hacer", false);			
-	}	
-	
-	//PR24. Sin hacer /
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, emailRegistrado, "ferrari12");
+		PO_HomeView.clickOption(driver, "offer/otherOfferList", "h2", "Comprar Ofertas");
+		
+		PO_PrivateView.buyOfferByTitle(driver, "Movil");
+		
+		PO_PrivateView.checkElement(driver, "text", "90");
+	}
+
+	// PR24. Sobre una búsqueda determinada (a elección de desarrollador), comprar
+	// una oferta que
+	// deja un saldo 0 en el contador del comprobador. Y comprobar que el contador
+	// se actualiza
+	// correctamente en la vista del comprador.
 	@Test
 	public void PR24() {
-		assertTrue("PR24 sin hacer", false);			
-	}	
-	//PR25. Sin hacer /
+		assertTrue("PR24 sin hacer", false);
+	}
+
+	// PR25.Sobre una búsqueda determinada (a elección de desarrollador), intentar
+	// comprar una
+	// oferta que esté por encima de saldo disponible del comprador. Y comprobar que
+	// se muestra el
+	// mensaje de saldo no suficiente
 	@Test
 	public void PR25() {
-		assertTrue("PR25 sin hacer", false);			
-	}	
-	
-	//PR26. Sin hacer /
+		assertTrue("PR25 sin hacer", false);
+	}
+
+	// PR26. Sin hacer /
 	@Test
 	public void PR26() {
-		assertTrue("PR26 sin hacer", false);			
-	}	
-	
-	//PR27. Sin hacer /
+		assertTrue("PR26 sin hacer", false);
+	}
+
+	// PR27. Sin hacer /
 	@Test
 	public void PR27() {
-		assertTrue("PR27 sin hacer", false);			
-	}	
-	
-	//PR029. Sin hacer /
+		assertTrue("PR27 sin hacer", false);
+	}
+
+	// PR029. Sin hacer /
 	@Test
 	public void PR29() {
-		assertTrue("PR29 sin hacer", false);			
+		assertTrue("PR29 sin hacer", false);
 	}
 
-	//PR030. Sin hacer /
+	// PR030.Inicio de sesión con datos válidos
 	@Test
 	public void PR30() {
-		assertTrue("PR30 sin hacer", false);			
+		assertTrue("PR30 sin hacer", false);
 	}
-	
-	//PR031. Sin hacer /
+
+	// PR031. Sin hacer /
 	@Test
 	public void PR31() {
-		assertTrue("PR31 sin hacer", false);			
+		assertTrue("PR31 sin hacer", false);
+	}
+
+	// PR032. Inicio de sesión con datos válidos (campo email o contraseña vacíos).
+	@Test
+	public void PR32() {
+		assertTrue("PR31 sin hacer", false);
 	}
 	
-		
-}
+	// PR032. 
+	@Test
+	public void PR33() {
+		assertTrue("PR31 sin hacer", false);
+	}
 
+	// PR032. Sobre una búsqueda determinada de ofertas (a elección de desarrollador), enviar un
+	//mensaje a una oferta concreta. Se abriría dicha conversación por primera vez. Comprobar que el
+	//mensaje aparece en el listado de mensajes
+	@Test
+	public void PR34() {
+		assertTrue("PR31 sin hacer", false);
+	}
+
+	// PR032. Sin hacer /
+	@Test
+	public void PR35() {
+		assertTrue("PR31 sin hacer", false);
+	}
+
+	
+
+}
