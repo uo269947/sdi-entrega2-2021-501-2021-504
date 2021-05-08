@@ -1,0 +1,50 @@
+<div id="widget-ofertas" >
+    <button class="btn" onclick="cargarOfertas()" >Actualizar</button>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Titulo</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+        <tbody id="tablaCuerpo">
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var ofertas;
+    function cargarOfertas(){
+        $.ajax({
+            url: URLbase + "/offer/otherOfferList/",
+            type: "GET",
+            data: { },
+            dataType: 'json',
+            headers: { "token": token },
+            success: function(respuesta) {
+                ofertas = respuesta;
+                actualizarTabla(ofertas);
+            },
+            error : function (error){
+                $( "#contenedor-principal" ).load("widget-login.html");
+            }
+        });
+    }
+    function actualizarTabla(ofertasMostrar){$( "#tablaCuerpo" ).empty(); // Vaciar la tabla
+        console.log(ofertasMostrar.ofertas[0]);
+        for (i = 0; i < ofertasMostrar.ofertas.length; i++) {
+            $( "#tablaCuerpo" ).append(
+                "<tr id="+ofertasMostrar.ofertas[i]._id+">"+
+                "<td>"+ofertasMostrar.ofertas[i].title+"</td>" +
+                "<td>"+ofertasMostrar.ofertas[i].description+"</td>" +
+                "<td>"+ofertasMostrar.ofertas[i].price+"</td>" +
+                "<td>"+
+                "</td>"+
+                "</tr>" );
+        }
+    }
+    cargarOfertas();
+</script>

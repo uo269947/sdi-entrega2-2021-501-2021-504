@@ -9,7 +9,7 @@ module.exports = function (app, gestorBD) {
                 });
                 return;
             } else {
-                console.log(offers[0]._id.toString())
+                console.log(offers[0]._id.toString());
                 res.status(200);
                 res.json({
                     ofertas: offers
