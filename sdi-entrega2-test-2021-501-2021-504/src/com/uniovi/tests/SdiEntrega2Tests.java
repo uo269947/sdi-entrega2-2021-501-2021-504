@@ -21,13 +21,16 @@ public class SdiEntrega2Tests {
 	//static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
 	//static String Geckdriver024 = "C:\\Path\\geckodriver024win64.exe";
 	//En MACOSX (Debe ser la versi√≥n 65.0.1 y desactivar las actualizacioens autom√°ticas):
-	static String PathFirefox65 = "/Applications/Firefox 2.app/Contents/MacOS/firefox-bin";
-	//static String PathFirefox64 = "/Applications/Firefox.app/Contents/MacOS/firefox-bin";
-	static String Geckdriver024 = "/Users/delacal/Documents/SDI1718/firefox/geckodriver024mac";
+	static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
+	static String Geckdriver024 = "C:\\Users\\Eric\\Desktop\\PL-SDI-SesiÛn5-material\\geckodriver024win64.exe";
+	//static String Geckdriver024 =
+		//	 "C:\\Users\\aleex\\Desktop\\UniTercero2\\SDI\\Material\\PL-SDI-SesiÛn5-material\\geckodriver024win64.exe";
+	
+	
 	//static String Geckdriver022 = "/Users/delacal/Documents/SDI1718/firefox/geckodriver023mac";
 	//Com√∫n a Windows y a MACOSX
 	static WebDriver driver = getDriver(PathFirefox65, Geckdriver024); 
-	static String URL = "https://localhost:8081";
+	static String URL = "http://localhost:8081";
 
 
 	public static WebDriver getDriver(String PathFirefox, String Geckdriver) {
@@ -59,10 +62,12 @@ public class SdiEntrega2Tests {
 		driver.quit();
 	}
 
-	//PR01. Sin hacer /
+	//PR01. Resgitro de Usuario con datos validos
 	@Test
 	public void PR01() {
-		assertTrue("PR01 sin hacer", false);			
+		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
+		PO_RegisterView.fillForm(driver, "prueba"+Math.random()*10+"@uniovi.es", "Charles", "Leclerc", "ferrari12", "ferrari12");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");			
 	}
 
 	//PR02. Sin hacer /
