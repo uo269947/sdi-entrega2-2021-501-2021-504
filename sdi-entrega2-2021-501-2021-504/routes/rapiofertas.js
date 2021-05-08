@@ -147,5 +147,68 @@ module.exports = function (app, gestorBD) {
         });
     });
 
+    /**
+     * Método get que obtiene todas las conversaciones
+     * de un usuario
+     */
+    app.get("/api/offer/message/list",function (req,res) {
+        let email = req.res.usuario
+        let criterio = {$or:[{"propietario":email},{"interesado":email}]}
+        gestorBD.obtenerConversacion(criterio,function (conversaciones) {
+            if(conversaciones == null){
+                res.status(500);
+                res.json({
+                    error: "se ha producido un error"
+                })
+            }
+            else{
+                res.status(200)
+                res.json({
+                    conversaciones:conversaciones
+                })
+            }
+        })
+    })
+
+    /**
+     * Método delete que elimina una conversacion
+     * dada su id
+     */
+    app.delete("/api/offer/message:id",function (req,res) {
+        let email = req.res.usuario;
+        let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)}
+        gestorBD.obtenerConversacion(criterio,function (conver) {
+            if( conver == null){
+                res.status(500);
+                res.json({
+                    error: "se ha producido un error"
+                })
+            }
+            if(conver.length == 0){
+                res.status(500);
+                res.json({
+                    error: "No existe esa conversación"
+                })
+            }
+            if(conver[0].propietario != email && conver[0].interesado != email){
+                res.status(500);
+                res.json({
+                    error: "No perteneces a esa conversación"
+                })
+            }
+            else{
+                gestorBD.eliminarConversacion(critero,function (result) {
+                    if ( result == null ){
+                        res.status(500);
+                        res.json({error : "se ha producido un error"})
+                    } else {
+                        res.status(200);
+                        res.send(JSON.stringify(result));
+                    }
+                })
+            }
+        })
+    });
+
 
 }
