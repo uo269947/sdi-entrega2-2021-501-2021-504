@@ -19,6 +19,7 @@
 <script>
     var ofertas;
 
+    window.history.pushState("", "", "/cliente.html?w=ofertas");
     function cargarOfertas() {
         $.ajax({
             url: URLbase + "/offer/otherOfferList/",
