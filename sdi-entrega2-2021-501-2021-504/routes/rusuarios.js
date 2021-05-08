@@ -86,7 +86,7 @@ module.exports = function(app,swig,gestorBD) {
      * Petición get que devuelve una lista de todos los usuarios registrados en el sistema
      */
     app.get('/usuario/list', function (req, res) {
-        let criterio = { "email" : {$ne: "admin@admin.es" } };
+        let criterio = { "email" : {$ne: "admin@email.com" } };
         gestorBD.obtenerUsuarios(criterio,function(users){
             if ( users == null ){
                 res.send("Error al listar usuarios");
