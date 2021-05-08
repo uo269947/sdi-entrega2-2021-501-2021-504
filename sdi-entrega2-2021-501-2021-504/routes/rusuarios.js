@@ -38,7 +38,10 @@ module.exports = function(app,swig,gestorBD) {
                 if (id == null){
                     res.redirect("/registrarse?mensaje=Error al registrar usuario");
                 } else {
-                    res.redirect("/identificarse?mensaje=Nuevo usuario registrado");
+                    req.session.usuario = usuario.email;
+                    req.session.rol = usuario.rol;
+                    req.session.money = usuario.money;
+                    res.redirect("/");
                 }
             });
         }
@@ -90,7 +93,7 @@ module.exports = function(app,swig,gestorBD) {
      * Petición get que devuelve una lista de todos los usuarios registrados en el sistema
      */
     app.get('/usuario/list', function (req, res) {
-        let criterio = { "email" : {$ne: "admin@admin.es" } };
+        let criterio = { "email" : {$ne: "admin@email.com" } };
         gestorBD.obtenerUsuarios(criterio,function(users){
             if ( users == null ){
                 res.send("Error al listar usuarios");

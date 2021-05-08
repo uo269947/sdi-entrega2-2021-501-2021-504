@@ -85,7 +85,7 @@ module.exports = function(app, swig, gestorBD) {
         let criterio = { "email" : {$ne: req.session.usuario } };
 
         if (req.query.busqueda != null){
-            criterio = { "email" : {$ne: req.session.usuario }, "title" : {$regex : ".*"+req.query.busqueda+".*"}};
+            criterio = { "email" : {$ne: req.session.usuario }, "title" : {$regex : ".*"+req.query.busqueda+".*",$options:"i"}};
         }
         let pg = parseInt(req.query.pg); // Es String !!!
         if ( req.query.pg == null){ // Puede no venir el param
