@@ -1,0 +1,21 @@
+Index: sdi-entrega2-2021-501-2021-504/routes/rusuarios.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>module.exports = function(app,swig,gestorBD) {\r\n\r\n    /**\r\n     * Get que muestra la vista de registro\r\n     */\r\n    app.get(\"/registrarse\", function(req, res) {\r\n        let respuesta = swig.renderFile('views/registro.html', {});\r\n        res.send(respuesta);\r\n    });\r\n\r\n    /**\r\n     * Post que procesa el registro\r\n     */\r\n    app.post('/usuario', function(req, res) {\r\n        let seguro = app.get(\"crypto\").createHmac('sha256', app.get('clave'))\r\n            .update(req.body.password).digest('hex');\r\n        let usuario = {\r\n            email : req.body.email,\r\n            nombre:req.body.name,\r\n            apellidos:req.body.surname,\r\n            password : seguro,\r\n            money:100\r\n        }\r\n\r\n        gestorBD.insertarUsuario(usuario, function(id) {\r\n            if (id == null){\r\n\r\n                res.redirect(\"/registrarse?mensaje=Error al registrar usuario\");\r\n            } else {\r\n                res.redirect(\"/identificarse?mensaje=Nuevo usuario registrado\");\r\n            }\r\n        });\r\n\r\n\r\n    });\r\n\r\n    /**\r\n     * Petición que muestra el login\r\n     */\r\n    app.get(\"/identificarse\", function(req, res) {\r\n        let respuesta = swig.renderFile('views/login.html', {});\r\n        res.send(respuesta);\r\n    });\r\n\r\n    /**\r\n     * Petición post para el login\r\n     */\r\n    app.post(\"/identificarse\", function(req, res) {\r\n        let seguro = app.get(\"crypto\").createHmac('sha256', app.get('clave'))\r\n            .update(req.body.password).digest('hex');\r\n        let criterio = {\r\n            email : req.body.email,\r\n            password : seguro\r\n        }\r\n        gestorBD.obtenerUsuarios(criterio, function(usuarios) {\r\n            if (usuarios == null || usuarios.length == 0) {\r\n                req.session.usuario = null;\r\n                res.redirect(\"/identificarse\" +\r\n                    \"?mensaje=Email o password incorrecto\"+\r\n                    \"&tipoMensaje=alert-danger \");\r\n            } else {\r\n                req.session.usuario = usuarios[0].email;\r\n                res.redirect(\"/publicaciones\");\r\n            }\r\n        });\r\n    });\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/sdi-entrega2-2021-501-2021-504/routes/rusuarios.js b/sdi-entrega2-2021-501-2021-504/routes/rusuarios.js
+--- a/sdi-entrega2-2021-501-2021-504/routes/rusuarios.js	(revision 6879fd20557544fd2229f9f26294a397807eb63a)
++++ b/sdi-entrega2-2021-501-2021-504/routes/rusuarios.js	(date 1620118389971)
+@@ -52,6 +52,10 @@
+             email : req.body.email,
+             password : seguro
+         }
++
++
++
++
+         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
+             if (usuarios == null || usuarios.length == 0) {
+                 req.session.usuario = null;
