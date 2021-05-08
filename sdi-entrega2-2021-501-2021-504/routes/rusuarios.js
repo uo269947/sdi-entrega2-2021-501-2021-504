@@ -68,7 +68,8 @@ module.exports = function(app,swig,gestorBD) {
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
         if (req.body.email.length <= 0 || req.body.password.length <= 0) {
-            res.redirect("/identificarse?mensaje=Debe rellenar todos los campos");
+            res.redirect("/identificarse?mensaje=Debe rellenar todos los campos"+
+            "&tipoMensaje=alert-danger");
         }
         else{
             let criterio = {
