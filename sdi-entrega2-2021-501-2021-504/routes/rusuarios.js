@@ -19,7 +19,7 @@ module.exports = function(app,swig,gestorBD) {
             res.redirect("/registrarse?mensaje=No puede dejar ningún campo vacío");
         }
         else if (req.body.password.length < 8) {
-            res.redirect("/registrarse?mensaje=La contraseña debe tener al menos 8 caracteres");
+           res.redirect("/registrarse?mensaje=La contraseña debe tener al menos 8 caracteres");
         }
         else if (req.body.password != req.body.password2) {
             res.redirect("/registrarse?mensaje=Las contraseñas no coinciden");

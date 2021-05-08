@@ -1,5 +1,6 @@
-<div id="widget-ofertas" >
-    <button class="btn" onclick="cargarOfertas()" >Actualizar</button>
+<div id="widget-ofertas">
+    <h2>Ofertas disponibles</h2>
+    <button class="btn" onclick="cargarOfertas()">Actualizar</button>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -17,34 +18,47 @@
 
 <script>
     var ofertas;
-    function cargarOfertas(){
+
+    function cargarOfertas() {
         $.ajax({
             url: URLbase + "/offer/otherOfferList/",
             type: "GET",
-            data: { },
+            data: {},
             dataType: 'json',
-            headers: { "token": token },
-            success: function(respuesta) {
+            headers: {"token": token},
+            success: function (respuesta) {
                 ofertas = respuesta;
                 actualizarTabla(ofertas);
             },
-            error : function (error){
-                $( "#contenedor-principal" ).load("widget-login.html");
+            error: function (error) {
+                $("#contenedor-principal").load("widget-login.html");
             }
         });
     }
-    function actualizarTabla(ofertasMostrar){$( "#tablaCuerpo" ).empty(); // Vaciar la tabla
+
+    function actualizarTabla(ofertasMostrar) {
+        $("#tablaCuerpo").empty(); // Vaciar la tabla
         console.log(ofertasMostrar.ofertas[0]);
         for (i = 0; i < ofertasMostrar.ofertas.length; i++) {
-            $( "#tablaCuerpo" ).append(
-                "<tr id="+ofertasMostrar.ofertas[i]._id+">"+
-                "<td>"+ofertasMostrar.ofertas[i].title+"</td>" +
-                "<td>"+ofertasMostrar.ofertas[i].description+"</td>" +
-                "<td>"+ofertasMostrar.ofertas[i].price+"</td>" +
-                "<td>"+
-                "</td>"+
-                "</tr>" );
+            $("#tablaCuerpo").append(
+                "<tr id=" + ofertasMostrar.ofertas[i]._id + ">" +
+                "<td>" + ofertasMostrar.ofertas[i].title + "</td>" +
+                "<td>" + ofertasMostrar.ofertas[i].description + "</td>" +
+                "<td>" + ofertasMostrar.ofertas[i].price + "</td>" +
+                "<td>" +
+                "<a onclick=mensaje('" + ofertasMostrar.ofertas[i]._id + "')>Mensaje</a>" +
+                "</td>" +
+                "</tr>");
         }
     }
+
+    function mensaje(_id) {
+        Cookies.set('token', token);
+        idOferta = _id
+        $("#contenedor-principal").load("widget-chat.html");
+
+    };
+
+
     cargarOfertas();
 </script>

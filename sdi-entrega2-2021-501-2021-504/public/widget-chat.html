@@ -1,0 +1,60 @@
+<div id="widget-chat">
+    <h1>Chat de oferta</h1>
+    <ul  id="mensajes">
+
+    </ul>
+
+    <div class="form-group">
+        <input type="text" class="form-control" name="text"
+               placeholder="Contenido del mensaje" id="text" />
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" id="boton-enviar">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+   function cargarMensajes(){
+
+       $.ajax({
+           url: URLbase + "/offer/message/"+idOferta,
+           type: "GET",
+           dataType: 'json',
+           headers: { "token": token },
+           success: function (respuesta) {
+               token = respuesta.token;
+               Cookies.set('token', respuesta.token);
+               idConver=respuesta.idConver;
+               messages=respuesta.mensajes;
+               mostrarMensajes(messages);
+           },
+           error : function (error) {
+               Cookies.remove('token');
+               $("#widget-login")
+                   .prepend("<div class='alert alert-danger'>Usuario no encontrado </div>");
+           }
+       });
+   }
+   function mostrarMensajes(messages) {
+
+       for (i = 0; i < messages.length; i++) {
+           console.log(messages[i]);
+           $("#mensajes").append(
+               "<p> [" + calcularFecha(messages[i].fecha)+" <b>"+messages[i].autor +"</b>] : "+messages[i].texto
+               +"</p>"
+           );
+       }
+   }
+
+   function calcularFecha(date) {
+       var f = new Date(date);
+       console.log(date);
+       return f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()+
+           " ("+f.getHours()+":"+f.getMinutes()+")";
+   }
+
+       cargarMensajes();
+
+</script>

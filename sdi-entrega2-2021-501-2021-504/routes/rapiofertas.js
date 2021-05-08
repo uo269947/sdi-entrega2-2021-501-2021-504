@@ -89,8 +89,8 @@ module.exports = function (app, gestorBD) {
             else {
                 let offer = offers[0];
                 if (offer.email != req.res.usuario) { //El usuario no es el propietario
-                    let criterio = {"offer_id": offer._id, "interesado": req.res.email};
-                    gestorBD.obtenerConversacion(criterio, function (conversacion) {
+                    let criterio2 = {"offer_id": gestorBD.mongo.ObjectID(req.params.id), "interesado": req.res.usuario};
+                    gestorBD.obtenerConversacion(criterio2, function (conversacion) {
 
 
                         if (conversacion.length == 0) { //No existe la conversación
@@ -109,14 +109,16 @@ module.exports = function (app, gestorBD) {
                                 } else {
                                     res.status(200);
                                     res.json({
-                                        mensajes: result.mensajes
+                                        mensajes: result.mensajes,
+                                        idConver: result._id
                                     })
                                 }
                             })
                         } else { //Si existe la conversación
                             res.status(200);
                             res.json({
-                                mensajes: conversacion[0].mensajes
+                                mensajes: conversacion[0].mensajes,
+                                idConver: conversacion[0]._id
                             })
                         }
                     });
@@ -138,7 +140,8 @@ module.exports = function (app, gestorBD) {
                         } else {
                             res.status(200)
                             res.json({
-                                mensajes: conversacion[0].mensajes
+                                mensajes: conversacion[0].mensajes,
+                                idConver: conversacion[0]._id
                             });
                         }
                     });
