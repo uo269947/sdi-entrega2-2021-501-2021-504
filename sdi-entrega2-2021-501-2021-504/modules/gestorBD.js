@@ -205,22 +205,53 @@ module.exports = {
                 });
             }
         });
-    }, obtenerMensajes: function(criterio,funcionCallback){
+    },  crearConversacion: function(conver,funcionCallback){
         this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
             if (err)
                 funcionCallback(null);
-            else{
+            else {
                 let collection = db.collection('messages');
-                collection.find(criterio).toArray(function (err, messages) {
+                collection.insert(conver, function (err, result) {
                     if (err) {
                         funcionCallback(null);
                     } else {
-                        funcionCallback(messages);
+                        funcionCallback(result.ops[0]);
                     }
                     db.close();
                 });
             }
-
+        });
+    },obtenerConversacion: function(criterio,funcionCallback){
+        this.mongo.MongoClient.connect(this.app.get('db'), function (err, db) {
+            if (err)
+                funcionCallback(null);
+            else {
+                let collection =db.collection('messages');
+                collection.find(criterio).toArray(function (err, convers) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(convers);
+                    }
+                    db.close();
+                });
+            }
+        });
+    },modificarConversacion: function(criterio,conversacion,funcionCallback){
+        this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('messages');
+                collection.update(criterio, {$set: conversacion}, function(err, result) {
+                    if (err) {
+                        funcionCallback(null);
+                    } else {
+                        funcionCallback(result);
+                    }
+                    db.close();
+                });
+            }
         });
     }
 };
