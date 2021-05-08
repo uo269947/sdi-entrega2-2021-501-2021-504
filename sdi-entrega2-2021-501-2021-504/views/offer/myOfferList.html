@@ -28,6 +28,14 @@
                 <td>{{ offer.title }}</td>
                 <td>{{ offer.description }}</td>
                 <td>{{ offer.price }}</td>
+
+                <td>
+                    {% if offer.destacada %}
+                        DESTACADA
+                    {% else %}
+                    <a href="/offer/destacar/{{ offer._id.toString() }} ">Destacar</a> <br>
+                    {% endif %}
+                </td>
                 <td>
                     <a href="/offer/delete/{{ offer._id.toString() }} ">Eliminar</a> <br>
                 </td>

@@ -5,18 +5,65 @@ module.exports = function(app, swig, gestorBD) {
      */
     app.post("/offer/add", function(req, res) {
         if (req.body.title.length <= 0 || req.body.description.length <= 0 || req.body.price.length <= 0 ) {
-            res.redirect("/offer/add?mensaje=No puede dejar campos vacíos");
+            res.redirect("/offer/add?mensaje=No puede dejar campos vacíos"+
+            "&tipoMensaje=alert-danger ");
         }
         else if (req.body.price <= 0) {
-            res.redirect("/offer/add?mensaje=El precio no puede ser menor o igual a 0");
+            res.redirect("/offer/add?mensaje=El precio no puede ser menor o igual a 0"
+            +"&tipoMensaje=alert-danger ");
         }
+
+
         else {
+            if(req.body.destacada == "on"){
+                if(req.session.money <20){ //Comprobamos si tiene saldo
+                    res.redirect("/offer/add?mensaje=No tienes dinero suficiente para destacar la oferta"
+                        +"&tipoMensaje=alert-danger ");
+                }
+                else{
+                    req.session.money-=20
+                    let usuario = {
+                        money:req.session.money
+                    }
+                    let criterio2 = {"email":req.session.usuario}
+                    gestorBD.modificarUsuario(criterio2,usuario,function (result) {
+                        if (result == null)
+                            res.redirect("/offer/myOfferList" +
+                                "?mensaje=Error al crear oferta" +
+                                "&tipoMensaje=alert-danger ");
+                        else{
+                            let offer = {
+                                title : req.body.title,
+                                description : req.body.description,
+                                price : req.body.price,
+                                email: req.session.usuario,
+                                buyer: null,
+                                destacada: true
+                            }
+
+                            gestorBD.insertOffer(offer, function(id){
+                                if (id == null) {
+                                    res.send("Error al insertar oferta");
+                                }
+                                else{
+                                    res.redirect("/offer/myOfferList");
+                                }
+                            });
+                        }
+
+
+
+                    })
+                }
+            }
+            else{
             let offer = {
                 title : req.body.title,
                 description : req.body.description,
                 price : req.body.price,
                 email: req.session.usuario,
-                buyer: null
+                buyer: null,
+                destacada: false
             }
 
             gestorBD.insertOffer(offer, function(id){
@@ -27,6 +74,7 @@ module.exports = function(app, swig, gestorBD) {
                     res.redirect("/offer/myOfferList");
                 }
             });
+        }
         }
     });
 
@@ -42,13 +90,36 @@ module.exports = function(app, swig, gestorBD) {
     });
 
     /**
-     * Petición post que elimina la oferta indicada por su identificador
+     * Petición get que elimina la oferta indicada por su identificador
      */
     app.get("/offer/delete/:id", function(req, res) {
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
         gestorBD.eliminarOffer(criterio,function(offers){
             if ( offers == null ){
                 res.send("Error al eliminar oferta");
+            } else {
+                res.redirect("/offer/myOfferList");
+            }
+        });
+    });
+
+    /**
+     * Petición get que destaca la oferta indicada por su identificador
+     */
+    app.get("/offer/destacar/:id", function(req, res) {
+        if(req.session.money<20){
+            res.redirect("/offer/myOfferList" +
+                "?mensaje=No tienes suficiente dinero para destacar la oferta" +
+                "&tipoMensaje=alert-danger ");
+            return;
+        }
+        req.session.money-=20
+        let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
+        let offer = {"destacada":true};
+
+        gestorBD.modificarOferta(criterio,offer,function(offers){
+            if ( offers == null ){
+                res.send("Error al destacar ofe");
             } else {
                 res.redirect("/offer/myOfferList");
             }
@@ -120,6 +191,30 @@ module.exports = function(app, swig, gestorBD) {
             }
         });
     })
+
+    /**
+     * Petición get que devuelve una lista de todas las ofertas destacadas
+     */
+    app.get('/offer/destacadas', function (req, res) {
+        let criterio = { "email" : {$ne: req.session.usuario },"destacada":true };
+
+        gestorBD.obtenerOffers(criterio,function(offers){
+            if ( offers == null ){
+                res.send("Error al obtener ofertas");
+            } else {
+
+                let respuesta = swig.renderFile('views/offer/offerDestacadas.html',
+                    {
+                        offers : offers,
+                        rol: req.session.rol,
+                        usuario: req.session.usuario,
+                        money: req.session.money
+                    });
+                res.send(respuesta);
+            }
+        });
+    })
+
 
     /**
      * Método get que compra una oferta con a partir de un ID

@@ -94,13 +94,41 @@ routerUsuarioPropietario.use(function (req, res, next) {
                 next();
             else
                 res.redirect("/offer/myOfferList" +
-                    "?mensaje=Esa oferta no es tuya, no puedes eliminarla" +
+                    "?mensaje=Esa oferta no es tuya" +
                     "&tipoMensaje=alert-danger ");
         })
 });
 //Aplicamos router UsuarioPropietario
 app.use("/offer/delete", routerUsuarioPropietario);
 
+
+//router destacarOferta
+let routerDestacarOferta = express.Router();
+routerUsuarioPropietario.use(function (req, res, next) {
+    console.log("routerDestacarOferta");
+    let path = require('path');
+    let id = path.basename(req.originalUrl);
+    gestorBD.obtenerOffers(
+        {_id: mongo.ObjectID(id)}, function (offers) {
+            if (offers[0].email != req.session.usuario)
+                res.redirect("/offer/myOfferList" +
+                    "?mensaje=Esa oferta no es tuya" +
+                    "&tipoMensaje=alert-danger ");
+            if(offers[0].destacada == true)
+                res.redirect("/offer/myOfferList" +
+                    "?mensaje=Esa oferta ya está destacada" +
+                    "&tipoMensaje=alert-danger ");
+            if(req.session.money<20)
+                res.redirect("/offer/myOfferList" +
+                    "?mensaje=No tienes suficiente dinero" +
+                    "&tipoMensaje=alert-danger ");
+            else{
+                next();
+            }
+        })
+});
+//Aplicamos router destacarOfertar
+app.use("/offer/destacar", routerDestacarOferta);
 
 //Router usuario admin
 let routerUsuarioAdmin = express.Router();
