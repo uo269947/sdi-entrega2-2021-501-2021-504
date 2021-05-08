@@ -15,18 +15,17 @@
 
 <script>
 
-        window.history.pushState("", "", "/cliente.html?w=chat");
+    window.history.pushState("", "", "/cliente.html?w=chat");
 
    function cargarMensajes(){
-
        $.ajax({
-           url: URLbase + "/offer/message/"+idOferta,
+           url: URLbase + "/offer/conver/"+idConver,
            type: "GET",
            dataType: 'json',
            headers: { "token": token },
            success: function (respuesta) {
-               idConver=respuesta.idConver;
-               messages=respuesta.mensajes;
+
+               messages=respuesta.conver.mensajes;
 
                mostrarMensajes(messages);
 
@@ -37,6 +36,27 @@
                    .prepend("<div class='alert alert-danger'>Usuario no encontrado </div>");
            }
        });
+      /*
+        else
+            $.ajax({
+                url: URLbase + "/offer/message/"+idOferta+"/"+interesado,
+                type: "GET",
+                dataType: 'json',
+                headers: { "token": token },
+                success: function (respuesta) {
+                    idConver=respuesta.idConver;
+                    messages=respuesta.mensajes;
+
+                    mostrarMensajes(messages);
+
+                },
+                error : function (error) {
+                    Cookies.remove('token');
+                    $("#widget-login")
+                        .prepend("<div class='alert alert-danger'>Usuario no encontrado </div>");
+                }
+            });*/
+
    }
    function mostrarMensajes(messages) {
        $("#mensajes").empty();

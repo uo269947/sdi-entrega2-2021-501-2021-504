@@ -125,36 +125,24 @@ module.exports = function (app, gestorBD) {
 
 
                 } else {//El usuario es el propietario
-                    let interesado = req.body.interesado;
-                    let criterio3 = {
-                        "offer_id": gestorBD.mongo.ObjectID(req.params.id),
-                        "propietario": req.res.usuario,
-                        "interesado": interesado
-                    };
-                    gestorBD.obtenerConversacion(criterio3, function (conversacion) {
-                        if (conversacion.length == 0) {
-                            res.status(500)
-                            res.json({
-                                error: "Esta conversacion no existe"
-                            })
-                        } else {
-                            res.status(200)
-                            res.json({
-                                mensajes: conversacion[0].mensajes,
-                                idConver: conversacion[0]._id
-                            });
-                        }
+                   res.status(500)
+                    res.send({
+                        error:"Siendo propietario de una oferta no puedes mandar mensaje a una oferta por primera vez"
                     });
                 }
             }
         });
     });
 
+
+
     /**
      * Método get que obtiene todas las conversaciones
      * de un usuario
      */
-    app.get("/api/offer/message/list",function (req,res) {
+    app.get("/api/offer/message",function (req,res) {
+       console.log("si");
+
         let email = req.res.usuario
         let criterio = {$or:[{"propietario":email},{"interesado":email}]}
         gestorBD.obtenerConversacion(criterio,function (conversaciones) {
@@ -173,6 +161,32 @@ module.exports = function (app, gestorBD) {
         })
     })
 
+    /**
+     * Metodo get que obtiene una conversacion
+     */
+    app.get("/api/offer/conver/:idConver",function (req,res) {
+        let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.idConver)}
+        gestorBD.obtenerConversacion(criterio,function (conver) {
+            if( conver == null){
+                res.status(500);
+                res.json({
+                    error: "se ha producido un error"
+                })
+            }
+            if(conver.length == 0){
+                res.status(500);
+                res.json({
+                    error: "No existe esa conversación"
+                })
+            }
+            else {
+                res.status(200);
+                res.json({
+                    conver: conver[0]
+                })
+            }
+        })
+    })
     /**
      * Método delete que elimina una conversacion
      * dada su id

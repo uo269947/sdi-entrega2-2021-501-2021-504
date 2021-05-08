@@ -1,0 +1,77 @@
+<div id="widget-ofertas">
+    <h2>Conversaciones</h2>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Oferta</th>
+            <th>Persona</th>
+            <th class="col-md-1"></th>
+        </tr>
+        </thead>
+        <tbody id="tablaChatsCuerpo">
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+
+    window.history.pushState("", "", "/cliente.html?w=chats");
+    function cargarChats() {
+        $.ajax({
+            url: URLbase + "/offer/message",
+            type: "GET",
+            data: {},
+            dataType: 'json',
+            headers: {"token": token},
+            success: function (respuesta) {
+                console.log();
+
+                conversaciones = respuesta.conversaciones
+                actualizarTabla(conversaciones);
+            },
+            error: function (error) {
+                $("#contenedor-principal").load("widget-login.html");
+            }
+        });
+    }
+
+    function actualizarTabla(conversaciones) {
+        $("#tablaChatsCuerpo").empty(); // Vaciar la tabla
+
+        for (i = 0; i < conversaciones.length; i++) {
+
+            $("#tablaChatsCuerpo").append(
+                "<tr id=" + conversaciones[i]._id + ">" +
+                "<td>"+"FALTA"+"</td>"+
+                "<td>"+obtenerNombre(conversaciones[i])+"</td>"+
+
+                "<td>" +
+                "<a onclick=mensaje('" + conversaciones[i]._id + "')>Mensaje</a>" +
+                "</td>" +
+                "</tr>");
+        }
+    }
+
+    function obtenerNombre(conversacion){
+/*
+        if(conversacion.propietario == email) {
+            return conversacion.interesado
+        }
+        return conversacion.propietario*7
+
+ */
+        return "falta";
+    }
+
+    function mensaje(idConversacion) {
+        Cookies.set('token', token);
+        idConver=idConversacion
+        $("#contenedor-principal").load("widget-chat.html");
+
+    };
+
+
+    cargarChats();
+</script>

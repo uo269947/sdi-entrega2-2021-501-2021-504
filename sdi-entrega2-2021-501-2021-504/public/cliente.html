@@ -12,6 +12,20 @@
 </head>
 <body>
 
+<!-- Barra de Navegación superior -->
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav" id="barra-menu">
+                <li><a onclick=widgetOfertas()>Ofertas</a></li>
+                <li><a onclick=widgetConversaciones()>Conversaciones</a></li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
 <!-- Contenido -->
 <div class="container" id="contenedor-principal"> <!-- id para identificar -->
 
@@ -34,7 +48,20 @@
         if ( w == "ofertas"){
             $( "#contenedor-principal" ).load("widget-ofertas.html");
         }
+        if ( w == "chats"){
+            $( "#contenedor-principal" ).load("widget-conversaciones.html");
+        }
     }
+
+    function widgetOfertas(){
+        $( "#contenedor-principal" ).load("widget-ofertas.html");
+    }
+
+    function widgetConversaciones(){
+        $( "#contenedor-principal" ).load("widget-conversaciones.html");
+    }
+
+
 </script>
 
 </body>
