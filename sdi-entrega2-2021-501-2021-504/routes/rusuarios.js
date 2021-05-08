@@ -37,7 +37,10 @@ module.exports = function(app,swig,gestorBD) {
                 if (id == null){
                     res.redirect("/registrarse?mensaje=Error al registrar usuario");
                 } else {
-                    res.redirect("/identificarse?mensaje=Nuevo usuario registrado");
+                    req.session.usuario = usuario.email;
+                    req.session.rol = usuario.rol;
+                    req.session.money = usuario.money;
+                    res.redirect("/");
                 }
             });
         }
