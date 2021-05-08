@@ -14,14 +14,15 @@ module.exports = function(app,swig,gestorBD) {
     app.post('/usuario', function(req, res) {
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
-        if (req.body.password.length < 8) {
+        if (req.body.email.length <= 0 || req.body.name.length <= 0 || req.body.surname.length <= 0
+            || req.body.password.length <= 0 || req.body.password2.length <= 0) {
+            res.redirect("/registrarse?mensaje=No puede dejar ningún campo vacío");
+        }
+        else if (req.body.password.length < 8) {
             res.redirect("/registrarse?mensaje=La contraseña debe tener al menos 8 caracteres");
         }
         else if (req.body.password != req.body.password2) {
             res.redirect("/registrarse?mensaje=Las contraseñas no coinciden");
-        }
-        else if (req.body.name.length <= 0 || req.body.email.length <= 0 || req.body.surname.length <= 0 ){
-            res.redirect("/registrarse?mensaje=Los campos no pueden estar vacíos");
         }
         else {
             let usuario = {
@@ -60,23 +61,29 @@ module.exports = function(app,swig,gestorBD) {
     app.post("/identificarse", function(req, res) {
         let seguro = app.get("crypto").createHmac('sha256', app.get('clave'))
             .update(req.body.password).digest('hex');
-        let criterio = {
-            email : req.body.email,
-            password : seguro
+        if (req.body.email.length <= 0 || req.body.password.length <= 0 ) {
+            res.redirect("/identificarse?mensaje=No puede dejar campos vacíos");
         }
-        gestorBD.obtenerUsuarios(criterio, function(usuarios) {
-            if (usuarios == null || usuarios.length == 0) {
-                req.session.usuario = null;
-                res.redirect("/identificarse" +
-                    "?mensaje=Email o password incorrecto"+
-                    "&tipoMensaje=alert-danger ");
-            } else {
-                req.session.usuario = usuarios[0].email;
-                req.session.rol = usuarios[0].rol;
-                req.session.money = usuarios[0].money;
-                res.redirect("/");
+        else {
+            let criterio = {
+                email : req.body.email,
+                password : seguro
             }
-        });
+            gestorBD.obtenerUsuarios(criterio, function(usuarios) {
+                if (usuarios == null || usuarios.length == 0) {
+                    req.session.usuario = null;
+                    res.redirect("/identificarse" +
+                        "?mensaje=Email o password incorrecto"+
+                        "&tipoMensaje=alert-danger ");
+                } else {
+                    req.session.usuario = usuarios[0].email;
+                    req.session.rol = usuarios[0].rol;
+                    req.session.money = usuarios[0].money;
+                    res.redirect("/");
+                }
+            });
+        }
+
     });
 
     /**

@@ -5,7 +5,7 @@ module.exports = function(app, swig, gestorBD) {
      */
     app.post("/offer/add", function(req, res) {
         if (req.body.title.length <= 0 || req.body.description.length <= 0 || req.body.price.length <= 0 ) {
-            res.redirect("/offer/add?mensaje=Los campos no pueden estar vacíos");
+            res.redirect("/offer/add?mensaje=No puede dejar campos vacíos");
         }
         else if (req.body.price <= 0) {
             res.redirect("/offer/add?mensaje=El precio no puede ser menor o igual a 0");
