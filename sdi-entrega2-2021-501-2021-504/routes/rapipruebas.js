@@ -132,7 +132,7 @@ module.exports = function (app, gestorBD) {
                 price :30,
                 email: "prueba3@prueba.com",
                 buyer: null,
-                destacada: true
+                destacada: false
             }
             ]
         gestorBD.insertOffer(ofertas,function (result) {
