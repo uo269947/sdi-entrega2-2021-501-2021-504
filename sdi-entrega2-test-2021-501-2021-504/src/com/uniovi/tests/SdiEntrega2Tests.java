@@ -21,6 +21,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 //Paquetes con los Page Object
 import com.uniovi.tests.pageobjects.PO_HomeView;
 import com.uniovi.tests.pageobjects.PO_LoginView;
@@ -41,9 +42,9 @@ public class SdiEntrega2Tests {
 	// En MACOSX (Debe ser la versiÃ³n 65.0.1 y desactivar las actualizacioens
 	// automÃ¡ticas):
 	static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
-	static String Geckdriver024 = "C:\\Users\\Eric\\Desktop\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
-	// static String Geckdriver024 =
-	// "C:\\Users\\aleex\\Desktop\\UniTercero2\\SDI\\Material\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
+	//static String Geckdriver024 = "C:\\Users\\Eric\\Desktop\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
+	 static String Geckdriver024 =
+	 "C:\\Users\\aleex\\Desktop\\UniTercero2\\SDI\\Material\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
 
 	// static String Geckdriver022 =
 	// "/Users/delacal/Documents/SDI1718/firefox/geckodriver023mac";
@@ -73,7 +74,10 @@ public class SdiEntrega2Tests {
 		MongoClient mongoClient = MongoClients.create(
 			    "mongodb+srv://admin:admin@cluster0.urjej.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
 		MongoDatabase database = mongoClient.getDatabase("myFirstDatabase");
-		database.getCollection("offers").drop();
+		database.getCollection("ofertas").drop();
+        database.getCollection("compras").drop();
+        database.getCollection("conversaciones").drop();
+        database.getCollection("usuarios").deleteMany(Filters.eq("rol", "admin"));
 		
 	}
 	
@@ -98,12 +102,8 @@ public class SdiEntrega2Tests {
 
 	// PR01. Resgitro de Usuario con datos validos
 	@Test
-	public void PR01() {
-		
-		
-		
+	public void PR01() {	
 		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
-		
 		emailRegistrado ="prueba" + Math.random() * 10+ "@uniovi.es";
 		PO_RegisterView.fillForm(driver, emailRegistrado, "Charles", "Leclerc",
 				"ferrari12", "ferrari12");
@@ -116,20 +116,27 @@ public class SdiEntrega2Tests {
 	public void PR02() {
 		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
 		PO_RegisterView.fillForm(driver, "", "", "", "ferrari12", "ferrari12");
-		SeleniumUtils.textoPresentePagina(driver, "Completa este campo");
+		SeleniumUtils.textoPresentePagina(driver, "No puede dejar campos vacíos");
+		
 	}
 
 	// PR03. Resgistro de usuario con datos invalidos repeteicion de contraseña
 	// invalida
 	@Test
-	public void PR03() {
-		assertTrue("PR03 sin hacer", false);
+	public void PR03() {	
+		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
+		emailRegistrado ="prueba" + Math.random() * 10+ "@uniovi.es";
+		PO_RegisterView.fillForm(driver, emailRegistrado, "Charles", "Leclerc",
+				"ferrari12", "ferrari123");
+		SeleniumUtils.textoPresentePagina(driver, "Las contraseñas deben coincidir");
 	}
 
-	// PR04. Registro de usuario con datos invalidos
+	// PR04. Registro de usuario con datos invalidos (email ya existe)
 	@Test
 	public void PR04() {
-		assertTrue("PR04 sin hacer", false);
+		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
+		PO_RegisterView.fillForm(driver, "prueba@prueba.es", "Jose Antonio", "Rendueles", "ferrari12", "ferrari12");
+		SeleniumUtils.textoPresentePagina(driver, "El usuario ya existe");
 	}
 
 	// PR05. Inicio de sesion con datos validos
