@@ -69,9 +69,9 @@ routerUsuarioToken.use(function(req, res, next) {
         });
     }
 });
-
 // Aplicar routerUsuarioToken
 app.use('/api/offer', routerUsuarioToken);
+
 
 // routerUsuarioSession
 var routerUsuarioSession = express.Router();
@@ -177,7 +177,7 @@ require("./routes/rofertas.js")(app, swig, gestorBD);
 require("./routes/rusuarios.js")(app, swig, gestorBD);
 require("./routes/rapiusuarios.js")(app,gestorBD);
 require("./routes/rapiofertas.js")(app,gestorBD);
-
+require("./routes/rapipruebas.js")(app,gestorBD);
 app.use(function (err, req, res, next) {
     console.log("Error producido: " + err);//mostramos el error en consola
     if (!res.headersSent) {

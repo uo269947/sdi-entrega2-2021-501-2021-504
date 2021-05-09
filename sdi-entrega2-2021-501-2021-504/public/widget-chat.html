@@ -32,31 +32,11 @@
            },
            error : function (error) {
                Cookies.remove('token');
+               console.log("eror");
                $("#widget-login")
                    .prepend("<div class='alert alert-danger'>Usuario no encontrado </div>");
            }
        });
-      /*
-        else
-            $.ajax({
-                url: URLbase + "/offer/message/"+idOferta+"/"+interesado,
-                type: "GET",
-                dataType: 'json',
-                headers: { "token": token },
-                success: function (respuesta) {
-                    idConver=respuesta.idConver;
-                    messages=respuesta.mensajes;
-
-                    mostrarMensajes(messages);
-
-                },
-                error : function (error) {
-                    Cookies.remove('token');
-                    $("#widget-login")
-                        .prepend("<div class='alert alert-danger'>Usuario no encontrado </div>");
-                }
-            });*/
-
    }
    function mostrarMensajes(messages) {
        $("#mensajes").empty();
@@ -77,9 +57,35 @@
            " ("+f.getHours()+":"+f.getMinutes()+")";
    }
 
-      setInterval(function(){
+    $("#boton-enviar").click(function(){
+        $.ajax({
+            url: URLbase + "/offer/message",
+            type: "POST",
+            data: {
+                text : $("#text").val(),
+                converId: idConver
+            },
+            headers: { "token": token },
+            dataType: 'json',
+            success: function (respuesta) {
+                $("#text").text("")
+                cargarMensajes();
+               // token = respuesta.token;
+                // Cookies.set('token', respuesta.token);
+               // $("#contenedor-principal").load("widget-ofertas.html");
+            },
+            error : function (error) {
+                Cookies.remove('token');
+                $("#widget-login")
+                    .prepend("<div class='alert alert-danger'>Error </div>");
+            }
+        });
+    });
 
-          cargarMensajes()
-      }, 3000)
+
+      setInterval(
+          cargarMensajes
+      , 3000)
+
 
 </script>

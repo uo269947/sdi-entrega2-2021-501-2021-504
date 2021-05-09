@@ -9,7 +9,7 @@ module.exports = function (app, gestorBD) {
                 });
                 return;
             } else {
-                console.log(offers[0]._id.toString());
+
                 res.status(200);
                 res.json({
                     ofertas: offers
@@ -18,10 +18,13 @@ module.exports = function (app, gestorBD) {
         })
     });
 
-    app.post("/api/offer/message/:converId", function (req, res) {
+    /**
+     * Método post que envia un mensaje a una conversacion
+     */
+    app.post("/api/offer/message", function (req, res) {
         //let offerId= gestorBD.mongo.ObjectID(req.params.id);
         //let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)}
-        let converId = req.params.converId;
+        let converId = req.body.converId;
         
         let criterio = {"_id": gestorBD.mongo.ObjectID(converId)}
         
@@ -95,6 +98,7 @@ module.exports = function (app, gestorBD) {
 
                         if (conversacion.length == 0) { //No existe la conversación
                             let conversacion = {
+                                "nombreOferta": offer.title,
                                 "propietario": offer.email,
                                 "offer_id": offer._id,
                                 "interesado": req.res.usuario,
@@ -140,7 +144,7 @@ module.exports = function (app, gestorBD) {
      * Método get que obtiene todas las conversaciones
      * de un usuario
      */
-    app.get("/api/offer/message",function (req,res) {
+    app.get("/api/offer/conver",function (req,res) {
        console.log("si");
 
         let email = req.res.usuario
@@ -191,7 +195,7 @@ module.exports = function (app, gestorBD) {
      * Método delete que elimina una conversacion
      * dada su id
      */
-    app.delete("/api/offer/message:id",function (req,res) {
+    app.delete("/api/offer/conver:id",function (req,res) {
         let email = req.res.usuario;
         let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)}
         gestorBD.obtenerConversacion(criterio,function (conver) {
