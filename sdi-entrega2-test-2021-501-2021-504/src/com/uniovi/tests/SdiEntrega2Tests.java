@@ -5,6 +5,10 @@ import static org.junit.Assert.assertTrue;
 //Paquetes Java
 import java.util.List;
 
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
+
+import org.codehaus.jackson.node.ObjectNode;
 //Paquetes JUnit 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -21,6 +25,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.uniovi.tests.pageobjects.PO_ApiLoginView;
 //Paquetes con los Page Object
 import com.uniovi.tests.pageobjects.PO_HomeView;
 import com.uniovi.tests.pageobjects.PO_LoginView;
@@ -69,11 +74,17 @@ public class SdiEntrega2Tests {
 	}
 
 	public void initdb() {
-		//Unicamente elimina las ofertas anteriores
-		MongoClient mongoClient = MongoClients.create(
-			    "mongodb+srv://admin:admin@cluster0.urjej.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
-		MongoDatabase database = mongoClient.getDatabase("myFirstDatabase");
-		database.getCollection("offers").drop();
+		ObjectNode respuestaJSON;
+		 respuestaJSON = ClientBuilder.newClient()
+		 .target("http://localhost:8081/api/pruebas")
+		 .request()
+		 .accept(MediaType.APPLICATION_JSON)
+		 .get()
+		 .readEntity(ObjectNode.class);
+
+		 String memoria = respuestaJSON.get("mensaje").toString();
+		System.out.println(memoria);
+		
 		
 	}
 	
@@ -351,7 +362,9 @@ public class SdiEntrega2Tests {
 	// PR030.Inicio de sesión con datos válidos
 	@Test
 	public void PR30() {
-		assertTrue("PR30 sin hacer", false);
+		driver.navigate().to(URL+"/cliente.html");
+		PO_ApiLoginView.fillForm(driver,"prueba2@prueba.es","12345678");
+		PO_ApiLoginView.checkElement(driver, "text", "Ofertas disponibles");
 	}
 
 	// PR031. Sin hacer /
@@ -360,10 +373,12 @@ public class SdiEntrega2Tests {
 		assertTrue("PR31 sin hacer", false);
 	}
 
-	// PR032. Inicio de sesión con datos válidos (campo email o contraseña vacíos).
+	// PR032. Inicio de sesión con datos inválidos (campo email o contraseña vacíos).
 	@Test
 	public void PR32() {
-		assertTrue("PR31 sin hacer", false);
+		driver.navigate().to(URL+"/cliente.html");
+		PO_ApiLoginView.fillForm(driver,"prueba2@prueba.es","");
+		PO_ApiLoginView.checkElement(driver, "text", "Usuario no encontrado");
 	}
 	
 	// PR032. 
