@@ -416,7 +416,7 @@ public class SdiEntrega2Tests {
 		
 		PO_PrivateView.buyOfferByTitle(driver, "Movil");
 		
-		PO_PrivateView.checkElement(driver, "text", "90");
+		PO_PrivateView.checkElement(driver, "text", "90"); 
 	}
 
 	// PR24. Sobre una búsqueda determinada (a elección de desarrollador), comprar
