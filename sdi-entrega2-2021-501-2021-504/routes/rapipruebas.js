@@ -131,7 +131,9 @@ module.exports = function (app, gestorBD) {
             } else {
                 res.status(200);
                 res.json({
-                    mensaje:"Todos los datos borrados e insertados"
+                    mensaje:"Todos los datos borrados e insertados",
+                    nOfertas: 3,
+                    nUsuarios: 3
                 })
             }
         })
