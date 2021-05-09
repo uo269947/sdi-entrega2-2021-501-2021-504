@@ -11,9 +11,8 @@ import org.openqa.selenium.support.ui.Select;
 
 import com.uniovi.tests.util.SeleniumUtils;
 
-
-public class PO_PrivateView extends PO_NavView{
-	static public void fillFormAddOffer(WebDriver driver, String titlep, String descriptionp, int preciop)
+public class PO_PrivateView extends PO_NavView {
+	static public void fillFormAddOffer(WebDriver driver, String titlep, String descriptionp, int preciop, boolean destacada)
 	{	
 		//Espero por que se cargue el formulario de a�adir oferta (Concretamente el botón class="btn")
 		PO_View.checkElement(driver, "class", "btn");
@@ -31,42 +30,56 @@ public class PO_PrivateView extends PO_NavView{
 		price.click();
 		price.clear();
 		price.sendKeys(String.valueOf(preciop));
+		if(destacada) {
+			driver.findElement(By.id("destacada")).click();
+			
+		}
 		By boton = By.className("btn");
 		driver.findElement(boton).click();	
 	}
-	
-	
+
 	/**
-	 * CLicka una de las opciones principales (a href) y comprueba que se vaya a la vista con el elemento de tipo type con el texto Destino
-	 * @param driver: apuntando al navegador abierto actualmente.
-	 * @param textOption: Texto de la opción principal.
-	 * @param criterio: "id" or "class" or "text" or "@attribute" or "free". Si el valor de criterio es free es una expresion xpath completa. 
-	 * @param textoDestino: texto correspondiente a la búsqueda de la página destino.
+	 * CLicka una de las opciones principales (a href) y comprueba que se vaya a la
+	 * vista con el elemento de tipo type con el texto Destino
+	 * 
+	 * @param driver:       apuntando al navegador abierto actualmente.
+	 * @param textOption:   Texto de la opción principal.
+	 * @param criterio:     "id" or "class" or "text" or "@attribute" or "free". Si
+	 *                      el valor de criterio es free es una expresion xpath
+	 *                      completa.
+	 * @param textoDestino: texto correspondiente a la búsqueda de la página
+	 *                      destino.
 	 */
 	public static void clickAddOffer(WebDriver driver) {
-		//CLickamos en la opción de registro y esperamos a que se cargue el enlace de Registro.
+		// CLickamos en la opción de registro y esperamos a que se cargue el enlace de
+		// Registro.
 		List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "@href", "/offer/add", getTimeout());
-		//Tiene que haber un sólo elemento.
-		assertTrue(elementos.size()==1);
-		//Ahora lo clickamos
+		// Tiene que haber un sólo elemento.
+		assertTrue(elementos.size() == 1);
+		// Ahora lo clickamos
 		elementos.get(0).click();
-		//Esperamos a que sea visible un elemento concreto
+		// Esperamos a que sea visible un elemento concreto
 		elementos = SeleniumUtils.EsperaCargaPagina(driver, "h2", "Agregar oferta", getTimeout());
-		//Tiene que haber un sólo elemento.
-		assertTrue(elementos.size()==1);	
+		// Tiene que haber un sólo elemento.
+		assertTrue(elementos.size() == 1);
 	}
 
-
-	public static void deleteFirstOfferFromList(WebDriver driver,String title) {
+	public static void deleteFirstOfferFromList(WebDriver driver, String title) {
 		List<WebElement> elementos = PO_View.checkElement(driver, "free",
 				"//td[contains(text(), '" + title + "')]/following-sibling::*/a[contains(@href, 'offer/delete')]");
 		elementos.get(0).click();
-		
+
 	}
-	
-	public static void buyOfferByTitle(WebDriver driver,String title) {
+
+	public static void buyOfferByTitle(WebDriver driver, String title) {
 		List<WebElement> elementos = PO_View.checkElement(driver, "free",
 				"//td[contains(text(), '" + title + "')]/following-sibling::*/a[contains(@href, 'offer/buy')]");
+		elementos.get(0).click();
+	}
+	
+	public static void destacarOfferByTitle(WebDriver driver, String title) {
+		List<WebElement> elementos = PO_View.checkElement(driver, "free",
+				"//td[contains(text(), '" + title + "')]/following-sibling::*/a[contains(@href, 'offer/destacar')]");
 		elementos.get(0).click();
 	}
 }
