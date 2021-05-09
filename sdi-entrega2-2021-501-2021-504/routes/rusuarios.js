@@ -16,15 +16,22 @@ module.exports = function(app,swig,gestorBD) {
             .update(req.body.password).digest('hex');
         if (req.body.email.length <= 0 || req.body.name.length <= 0 || req.body.surname.length <= 0
             || req.body.password.length <= 0 || req.body.password2.length <= 0) {
-            res.redirect("/registrarse?mensaje=No puede dejar ningún campo vacío");
+            res.redirect("/registrarse?mensaje=No puede dejar campos vacíos");
         }
         else if (req.body.password.length < 8) {
             res.redirect("/registrarse?mensaje=La contraseña debe tener al menos 8 caracteres");
         }
         else if (req.body.password != req.body.password2) {
-            res.redirect("/registrarse?mensaje=Las contraseñas no coinciden");
+            res.redirect("/registrarse?mensaje=Las contraseñas deben coincidir");
         }
         else {
+            let criterio = {"email" : req.body.email }
+            gestorBD.obtenerUsuarios(criterio, function(usuario) {
+                if (usuario.length > 0) {
+                    res.redirect("/registrarse?mensaje=El usuario ya existe");
+                }
+            });
+
             let usuario = {
                 email : req.body.email,
                 nombre:req.body.name,
