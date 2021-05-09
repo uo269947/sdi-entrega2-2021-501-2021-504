@@ -46,6 +46,7 @@ module.exports = {
                     if (err) {
                         funcionCallback(null);
                     } else {
+                        console.log(result.ops[0].email);
                         funcionCallback(result.ops[0].email);
                     }
                     db.close();

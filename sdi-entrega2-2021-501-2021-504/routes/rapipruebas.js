@@ -32,9 +32,22 @@ module.exports = function (app, gestorBD) {
                     error: "Error al eliminar conversaciones"
                 })
             } else {
-                eliminarOfertas(req,res);
+                eliminarConversaciones(req,res);
             }
         });
+    }
+
+    function eliminarConversaciones(req,res){
+        gestorBD.eliminarConversacion({},function (result) {
+            if (result == null) {
+                res.status(500); //unauthorized
+                res.json({
+                    error: "Error al eliminar ofertas"
+                })
+            } else {
+                eliminarOfertas(req,res)
+            }
+        })
     }
 
     function eliminarOfertas(req,res){
@@ -81,7 +94,7 @@ module.exports = function (app, gestorBD) {
                 nombre:"prueba3",
                 apellidos:"prueba3",
                 password : seguro,
-                money: 100,
+                money: 19,
                 rol: "usuario"
             },
         ]
@@ -131,7 +144,9 @@ module.exports = function (app, gestorBD) {
             } else {
                 res.status(200);
                 res.json({
-                    mensaje:"Todos los datos borrados e insertados"
+                    mensaje:"Todos los datos borrados e insertados",
+                    nOfertas: 3,
+                    nUsuarios: 3
                 })
             }
         })
