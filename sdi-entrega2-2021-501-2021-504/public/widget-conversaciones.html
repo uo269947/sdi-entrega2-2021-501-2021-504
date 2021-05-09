@@ -4,7 +4,8 @@
         <thead>
         <tr>
             <th>Oferta</th>
-            <th>Persona</th>
+            <th>Propietario</th>
+            <th>Interesado</th>
             <th class="col-md-1"></th>
         </tr>
         </thead>
@@ -44,9 +45,9 @@
 
             $("#tablaChatsCuerpo").append(
                 "<tr id=" + conversaciones[i]._id + ">" +
-                "<td>"+"FALTA"+"</td>"+
-                "<td>"+obtenerNombre(conversaciones[i])+"</td>"+
-
+                "<td>"+conversaciones[i].nombreOferta+"</td>"+
+                "<td>"+conversaciones[i].propietario+"</td>"+
+                "<td>"+conversaciones[i].interesado+"</td>"+
                 "<td>" +
                 "<a onclick=mensaje('" + conversaciones[i]._id + "')>Mensaje</a>" +
                 "</td>" +

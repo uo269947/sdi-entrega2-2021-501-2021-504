@@ -36,27 +36,6 @@
                    .prepend("<div class='alert alert-danger'>Usuario no encontrado </div>");
            }
        });
-      /*
-        else
-            $.ajax({
-                url: URLbase + "/offer/message/"+idOferta+"/"+interesado,
-                type: "GET",
-                dataType: 'json',
-                headers: { "token": token },
-                success: function (respuesta) {
-                    idConver=respuesta.idConver;
-                    messages=respuesta.mensajes;
-
-                    mostrarMensajes(messages);
-
-                },
-                error : function (error) {
-                    Cookies.remove('token');
-                    $("#widget-login")
-                        .prepend("<div class='alert alert-danger'>Usuario no encontrado </div>");
-                }
-            });*/
-
    }
    function mostrarMensajes(messages) {
        $("#mensajes").empty();
@@ -77,9 +56,36 @@
            " ("+f.getHours()+":"+f.getMinutes()+")";
    }
 
+    $("#boton-enviar").click(function(){
+        $.ajax({
+            url: URLbase + "/offer/message",
+            type: "POST",
+            data: {
+                text : $("#text").val(),
+                converId: idConver
+            },
+            headers: { "token": token },
+            dataType: 'json',
+            success: function (respuesta) {
+                $("#text").empty()
+                cargarMensajes();
+               // token = respuesta.token;
+                // Cookies.set('token', respuesta.token);
+               // $("#contenedor-principal").load("widget-ofertas.html");
+            },
+            error : function (error) {
+                Cookies.remove('token');
+                $("#widget-login")
+                    .prepend("<div class='alert alert-danger'>Error </div>");
+            }
+        });
+    });
+
+
       setInterval(function(){
 
           cargarMensajes()
       }, 3000)
+
 
 </script>
