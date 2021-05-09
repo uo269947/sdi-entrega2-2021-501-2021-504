@@ -67,7 +67,7 @@
             headers: { "token": token },
             dataType: 'json',
             success: function (respuesta) {
-                $("#text").empty()
+                $("#text").text("")
                 cargarMensajes();
                // token = respuesta.token;
                 // Cookies.set('token', respuesta.token);
