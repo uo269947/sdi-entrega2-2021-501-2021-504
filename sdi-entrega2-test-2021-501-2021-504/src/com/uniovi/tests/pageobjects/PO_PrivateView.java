@@ -35,6 +35,19 @@ public class PO_PrivateView extends PO_NavView{
 		driver.findElement(boton).click();	
 	}
 	
+	static public void fillSearch(WebDriver driver, String string)
+	{	
+		//Espero por que se cargue el formulario de añadir oferta
+		PO_View.checkElement(driver, "class", "btn");
+		
+		  //Rellenemos el campo de buscar oferta
+	    WebElement title = driver.findElement(By.name("busqueda"));
+	    title.clear();
+	    title.sendKeys(string);
+
+		By boton = By.className("btn");
+		driver.findElement(boton).click();	
+	}
 	
 	/**
 	 * CLicka una de las opciones principales (a href) y comprueba que se vaya a la vista con el elemento de tipo type con el texto Destino
