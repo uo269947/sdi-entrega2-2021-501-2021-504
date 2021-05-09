@@ -1,5 +1,6 @@
 package com.uniovi.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 //Paquetes Java
@@ -31,6 +32,7 @@ import com.uniovi.tests.pageobjects.PO_ApiLoginView;
 import com.uniovi.tests.pageobjects.PO_HomeView;
 import com.uniovi.tests.pageobjects.PO_LoginView;
 import com.uniovi.tests.pageobjects.PO_PrivateView;
+import com.uniovi.tests.pageobjects.PO_Properties;
 import com.uniovi.tests.pageobjects.PO_RegisterView;
 import com.uniovi.tests.pageobjects.PO_View;
 //Paquetes Utilidades de Testing Propias
@@ -143,15 +145,15 @@ public class SdiEntrega2Tests {
 	@Test
 	public void PR04() {
 		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
-		PO_RegisterView.fillForm(driver, "prueba@prueba.es", "Jose Antonio", "Rendueles", "ferrari12", "ferrari12");
-		SeleniumUtils.textoPresentePagina(driver, "El usuario ya existe");
+		PO_RegisterView.fillForm(driver, "prueba@prueba.com", "Jose Antonio", "Rendueles", "ferrari12", "ferrari12");
+		SeleniumUtils.textoPresentePagina(driver, "Email ya registrado en la pagina");
 	}
 
 	// PR05. Inicio de sesion con datos validos
 	@Test
 	public void PR05() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
-		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
 		PO_View.checkElement(driver, "h2", "Mis Ofertas");
 	}
 
@@ -168,7 +170,13 @@ public class SdiEntrega2Tests {
 	// vacíos)./
 	@Test
 	public void PR07() {
-		assertTrue("PR07 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "", "");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+		PO_LoginView.fillForm(driver, "", "buenas");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "");
+		PO_View.checkElement(driver, "text", "No puede dejar campos vacíos");
 	}
 
 	// PR08. Inicio de sesión con datos inválidos (email no existente en la
@@ -180,16 +188,25 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text", "Email o password incorrecto");
 	}
 
-	// PR09. Sin hacer /
+	// PR09. Hacer click en boton de logout y comprobar que redirige a login /
 	@Test
 	public void PR09() {
-		assertTrue("PR09 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
+		PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");
+		PO_View.checkElement(driver, "h2", "Identificación de usuario");
 	}
 
-	// PR10. Sin hacer /
+	// PR10. Comprobar que el boton de logout no esta presente si el usuario no esta autentificado /
 	@Test
 	public void PR10() {
-		assertTrue("PR10 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
+		PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");
+		PO_View.checkElement(driver, "h2", "Identificación de usuario");
+		SeleniumUtils.textoNoPresentePagina(driver, "Logout");
 	}
 
 	// PR11.] Mostrar el listado de usuarios y comprobar que se muestran todos los
@@ -200,26 +217,55 @@ public class SdiEntrega2Tests {
 		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
 		PO_View.checkElement(driver, "h2", "Usuarios del sistema");
 		
-		PO_View.checkElement(driver, "text","prueba@prueba.es" );
+		PO_View.checkElement(driver, "text","prueba@prueba.com" );
+		PO_View.checkElement(driver, "text","prueba2@prueba.com" );
+		PO_View.checkElement(driver, "text","prueba3@prueba.com" );
 	//	PO_View.checkElement(driver, "text",emailRegistrado );
 	}
 
-	// PR12. Sin hacer /
+	// PR12. Comprobar que en la lista de usuarios, eliminas el primero y se actualiza bien la lista/
 	@Test
 	public void PR12() {
-		assertTrue("PR12 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
+		PO_View.checkElement(driver, "h2", "Usuarios del sistema");
+		
+		PO_HomeView.clickOption(driver, "prueba@prueba.com", "class", "checkbox");
+		PO_HomeView.clickOption(driver, "usuario/delete", "class", "btn btn-primary");
+		
+		SeleniumUtils.textoNoPresentePagina(driver,  "prueba@prueba.com");
+		SeleniumUtils.textoPresentePagina(driver,  "prueba2@prueba.com");
+		SeleniumUtils.textoPresentePagina(driver,  "prueba3@prueba.com");
 	}
 
-	// PR13. Sin hacer /
+	// PR13. Comprobar que en la lista de usuarios, eliminas el ultimo y se actualiza bien la lista/
 	@Test
 	public void PR13() {
-		assertTrue("PR13 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
+		PO_View.checkElement(driver, "h2", "Usuarios del sistema");
+		
+		PO_HomeView.clickOption(driver, "prueba3@prueba.com", "class", "checkbox");
+		PO_HomeView.clickOption(driver, "usuario/delete", "class", "btn btn-primary");
+		
+		SeleniumUtils.textoPresentePagina(driver,  "prueba@prueba.com");
+		SeleniumUtils.textoPresentePagina(driver,  "prueba2@prueba.com");
+		SeleniumUtils.textoNoPresentePagina(driver,  "prueba3@prueba.com");
 	}
 
-	// PR14. Sin hacer /
+	// PR14. Comprobar que en la lista de usuarios, eliminas 3 usuarios y se actualiza bien la lista/
 	@Test
 	public void PR14() {
-		assertTrue("PR14 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
+		PO_View.checkElement(driver, "h2", "Usuarios del sistema");
+		
+		PO_HomeView.clickOption(driver, "prueba3@prueba.com", "class", "checkbox");
+		PO_HomeView.clickOption(driver, "usuario/delete", "class", "btn btn-primary");
+		
+		SeleniumUtils.textoNoPresentePagina(driver,  "prueba@prueba.com");
+		SeleniumUtils.textoNoPresentePagina(driver,  "prueba2@prueba.com");
+		SeleniumUtils.textoNoPresentePagina(driver,  "prueba3@prueba.com");
 	}
 
 	// PR15. Ir al formulario de alta de oferta, rellenarla con datos válidos y
@@ -239,13 +285,29 @@ public class SdiEntrega2Tests {
 	//pulsar el botón Submit. Comprobar que se muestra el mensaje de campo
 	@Test
 	public void PR16() {
-		assertTrue("PR16 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
+		PO_HomeView.clickOption(driver, "offer/add", "class", "btn btn-primary");
+		PO_PrivateView.fillFormAddOffer(driver, "", "descripcion", 20);
+		PO_View.checkElement(driver, "text","No puede dejar campos vacíos" );
+		PO_PrivateView.fillFormAddOffer(driver, "titulo", "", 20);
+		PO_View.checkElement(driver, "text","No puede dejar campos vacíos" );
+		PO_PrivateView.fillFormAddOffer(driver, "title", "descripcion", -30);
+		PO_View.checkElement(driver, "text","El precio no puede ser menor o igual a 0" );
 	}
 
-	// PR017. Sin hacer /
+	// PR017. Comprobar que el listado de las ofertas de un usuario muestra todas las que  tiene /
 	@Test
 	public void PR17() {
-		assertTrue("PR17 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
+		PO_View.checkElement(driver, "text","oferta1" );
+		PO_HomeView.clickOption(driver, "offer/add", "class", "btn btn-primary");
+		PO_PrivateView.fillFormAddOffer(driver, "titulo", "descripcion", 20);
+		PO_View.checkElement(driver, "text","oferta1" );
+		PO_View.checkElement(driver, "text","titulo" );
 	}
 
 	// PR18. Ir a la lista de ofertas, borrar la primera oferta de la lista,
@@ -254,20 +316,17 @@ public class SdiEntrega2Tests {
 	@Test
 	public void PR18() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
-		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba");
-		
-		List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
-				"//tbody/tr/td/a", PO_View.getTimeout());
-		int size1 = elementos.size();
-		
-		elementos.get(0).click();
-		//PO_PrivateView.deleteFirstOfferFromList(driver,"Movil");
-		
-		elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
-				"//tbody/tr/td/a", PO_View.getTimeout());
-		int size2 = elementos.size();
-		
-		assertTrue(size1>size2);
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
+		PO_View.checkElement(driver, "text","oferta1" );
+		PO_HomeView.clickOption(driver, "offer/add", "class", "btn btn-primary");
+		PO_PrivateView.fillFormAddOffer(driver, "titulo", "descripcion", 20);
+		PO_View.checkElement(driver, "text","oferta1" );
+		PO_View.checkElement(driver, "text","titulo" );
+		PO_PrivateView.deleteFirstOfferFromList(driver, "oferta1");
+	
+		SeleniumUtils.textoNoPresentePagina(driver, "oferta1");
+		SeleniumUtils.textoPresentePagina(driver, "titulo");
 	}
 
 	// PR19.Ir a la lista de ofertas, borrar la última oferta de la lista, comprobar
@@ -276,37 +335,72 @@ public class SdiEntrega2Tests {
 	@Test
 	public void PR19() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
-		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba");
-		
-		List<WebElement> elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
-				"//tbody/tr/td/a", PO_View.getTimeout());
-		int size1 = elementos.size();
-		
-		elementos.get(elementos.size()-1).click();
-		
-		elementos = SeleniumUtils.EsperaCargaPagina(driver, "free",
-				"//tbody/tr/td/a", PO_View.getTimeout());
-		int size2 = elementos.size();
-		
-		assertTrue(size1>size2);
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
+		PO_View.checkElement(driver, "text","oferta1" );
+		PO_HomeView.clickOption(driver, "offer/add", "class", "btn btn-primary");
+		PO_PrivateView.fillFormAddOffer(driver, "titulo", "descripcion", 20);
+		PO_View.checkElement(driver, "text","oferta1" );
+		PO_View.checkElement(driver, "text","titulo" );
+		PO_PrivateView.deleteFirstOfferFromList(driver, "titulo");
+
+		SeleniumUtils.textoPresentePagina(driver, "oferta1");
+		SeleniumUtils.textoNoPresentePagina(driver, "titulo");
 	}
 
-	// P20. Sin hacer /
+	// P20. Hacer una busqueda que devuelva solo las ofertas que coincidan /
 	@Test
 	public void PR20() {
-		assertTrue("PR20 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_HomeView.clickOption(driver, "offer/otherOfferList", "h2", "Comprar Ofertas");
+		PO_View.checkElement(driver, "h2", "Comprar Ofertas");
+		SeleniumUtils.textoPresentePagina(driver, "oferta2");
+		SeleniumUtils.textoPresentePagina(driver, "oferta3");
+		PO_PrivateView.fillSearch(driver, "oferta2");
+		
+		SeleniumUtils.textoPresentePagina(driver, "oferta2");
+		SeleniumUtils.textoNoPresentePagina(driver, "oferta3");
 	}
 
-	// PR21. Sin hacer /
+	// PR21. Hacer una busqueda que devuelva solo las ofertas que no existan /
 	@Test
 	public void PR21() {
-		assertTrue("PR21 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_HomeView.clickOption(driver, "offer/otherOfferList", "h2", "Comprar Ofertas");
+		PO_View.checkElement(driver, "h2", "Comprar Ofertas");
+		SeleniumUtils.textoPresentePagina(driver, "oferta2");
+		SeleniumUtils.textoPresentePagina(driver, "oferta3");
+		PO_PrivateView.fillSearch(driver, "oferta34");
+		
+		SeleniumUtils.textoNoPresentePagina(driver, "oferta2");
+		SeleniumUtils.textoNoPresentePagina(driver, "oferta3");
 	}
 
-	// PR22. Sin hacer /
+	// PR22. Hacer busqueda insensible de minusculas o mayusculas/
 	@Test
 	public void PR22() {
-		assertTrue("PR22 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_HomeView.clickOption(driver, "offer/otherOfferList", "h2", "Comprar Ofertas");
+		PO_View.checkElement(driver, "h2", "Comprar Ofertas");
+		SeleniumUtils.textoPresentePagina(driver, "oferta2");
+		SeleniumUtils.textoPresentePagina(driver, "oferta3");
+		PO_PrivateView.fillSearch(driver, "ofErTa2");
+		
+		SeleniumUtils.textoPresentePagina(driver, "oferta2");
+		SeleniumUtils.textoNoPresentePagina(driver, "oferta3");
+		
+		PO_PrivateView.fillSearch(driver, "oFertA3");
+		
+		SeleniumUtils.textoNoPresentePagina(driver, "oferta2");
+		SeleniumUtils.textoPresentePagina(driver, "oferta3");
+		
+		PO_PrivateView.fillSearch(driver, "OfErTa");
+		
+		SeleniumUtils.textoPresentePagina(driver, "oferta2");
+		SeleniumUtils.textoPresentePagina(driver, "oferta3");
 	}
 
 	// PR23.Sobre una búsqueda determinada (a elección de desarrollador), comprar
