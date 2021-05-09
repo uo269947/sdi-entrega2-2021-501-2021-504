@@ -25,12 +25,7 @@ module.exports = function(app,swig,gestorBD) {
             res.redirect("/registrarse?mensaje=Las contraseñas deben coincidir");
         }
         else {
-            let criterio = {"email" : req.body.email }
-            gestorBD.obtenerUsuarios(criterio, function(usuario) {
-                if (usuario.length > 0) {
-                    res.redirect("/registrarse?mensaje=El usuario ya existe");
-                }
-            });
+
 
             let usuario = {
                 email : req.body.email,
