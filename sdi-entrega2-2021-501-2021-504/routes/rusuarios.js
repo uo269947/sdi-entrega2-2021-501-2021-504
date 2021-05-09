@@ -19,7 +19,7 @@ module.exports = function(app,swig,gestorBD) {
             res.redirect("/registrarse?mensaje=No puede dejar campos vacíos");
         }
         else if (req.body.password.length < 8) {
-            res.redirect("/registrarse?mensaje=La contraseña debe tener al menos 8 caracteres");
+           res.redirect("/registrarse?mensaje=La contraseña debe tener al menos 8 caracteres");
         }
         else if (req.body.password != req.body.password2) {
             res.redirect("/registrarse?mensaje=Las contraseñas deben coincidir");
@@ -40,18 +40,29 @@ module.exports = function(app,swig,gestorBD) {
                 money: 100,
                 rol: "usuario"
             }
-
-            gestorBD.insertarUsuario(usuario, function(id) {
-                if (id == null){
-                    res.redirect("/registrarse?mensaje=Error al registrar usuario"+
-                    "&tipoMensaje=alert-danger");
-                } else {
-                    req.session.usuario = usuario.email;
-                    req.session.rol = usuario.rol;
-                    req.session.money = usuario.money;
-                    res.redirect("/");
+            gestorBD.obtenerUsuarios({email:usuario.email},function (users){
+                if(users==null){
+                    res.redirect("/registrarse?mensaje=Ha ocurrido un error"+
+                        "&tipoMensaje=alert-danger");
                 }
-            });
+                if(users.length!=0){
+                    res.redirect("/registrarse?mensaje=Email ya registrado en la pagina"+
+                        "&tipoMensaje=alert-danger");
+                }else{
+                    gestorBD.insertarUsuario(usuario, function(id) {
+                        if (id == null){
+                            res.redirect("/registrarse?mensaje=Error al registrar usuario"+
+                                "&tipoMensaje=alert-danger");
+                        } else {
+                            req.session.usuario = usuario.email;
+                            req.session.rol = usuario.rol;
+                            req.session.money = usuario.money;
+                            res.redirect("/");
+                        }
+                    });
+                }
+            })
+
         }
 
 

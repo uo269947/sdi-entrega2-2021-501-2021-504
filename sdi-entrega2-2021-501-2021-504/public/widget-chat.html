@@ -1,0 +1,91 @@
+<div id="widget-chat">
+    <h1>Chat de oferta</h1>
+    <ul  id="mensajes">
+
+    </ul>
+
+    <div class="form-group">
+        <input type="text" class="form-control" name="text"
+               placeholder="Contenido del mensaje" id="text" />
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="button" id="boton-enviar">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    window.history.pushState("", "", "/cliente.html?w=chat");
+
+   function cargarMensajes(){
+       $.ajax({
+           url: URLbase + "/offer/conver/"+idConver,
+           type: "GET",
+           dataType: 'json',
+           headers: { "token": token },
+           success: function (respuesta) {
+
+               messages=respuesta.conver.mensajes;
+
+               mostrarMensajes(messages);
+
+           },
+           error : function (error) {
+               Cookies.remove('token');
+               console.log("eror");
+               $("#widget-login")
+                   .prepend("<div class='alert alert-danger'>Usuario no encontrado </div>");
+           }
+       });
+   }
+   function mostrarMensajes(messages) {
+       $("#mensajes").empty();
+       for (i = 0; i < messages.length; i++) {
+           console.log(messages[i]);
+           $("#mensajes").append(
+               "<p> [" + calcularFecha(messages[i].fecha)+" <b>"+messages[i].autor +"</b>] : "+messages[i].texto
+               +"</p>"
+           );
+       }
+
+   }
+
+   function calcularFecha(date) {
+       var f = new Date(date);
+       console.log(date);
+       return f.getDate() + "/" + (f.getMonth() +1) + "/" + f.getFullYear()+
+           " ("+f.getHours()+":"+f.getMinutes()+")";
+   }
+
+    $("#boton-enviar").click(function(){
+        $.ajax({
+            url: URLbase + "/offer/message",
+            type: "POST",
+            data: {
+                text : $("#text").val(),
+                converId: idConver
+            },
+            headers: { "token": token },
+            dataType: 'json',
+            success: function (respuesta) {
+                $("#text").text("")
+                cargarMensajes();
+               // token = respuesta.token;
+                // Cookies.set('token', respuesta.token);
+               // $("#contenedor-principal").load("widget-ofertas.html");
+            },
+            error : function (error) {
+                Cookies.remove('token');
+                $("#widget-login")
+                    .prepend("<div class='alert alert-danger'>Error </div>");
+            }
+        });
+    });
+
+
+      setInterval(
+          cargarMensajes
+      , 3000)
+
+
+</script>

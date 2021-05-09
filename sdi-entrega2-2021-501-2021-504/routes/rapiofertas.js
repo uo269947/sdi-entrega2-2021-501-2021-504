@@ -9,7 +9,7 @@ module.exports = function (app, gestorBD) {
                 });
                 return;
             } else {
-                console.log(offers[0]._id.toString());
+
                 res.status(200);
                 res.json({
                     ofertas: offers
@@ -18,10 +18,13 @@ module.exports = function (app, gestorBD) {
         })
     });
 
-    app.post("/api/offer/message/:converId", function (req, res) {
+    /**
+     * Método post que envia un mensaje a una conversacion
+     */
+    app.post("/api/offer/message", function (req, res) {
         //let offerId= gestorBD.mongo.ObjectID(req.params.id);
         //let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)}
-        let converId = req.params.converId;
+        let converId = req.body.converId;
         
         let criterio = {"_id": gestorBD.mongo.ObjectID(converId)}
         
@@ -89,12 +92,13 @@ module.exports = function (app, gestorBD) {
             else {
                 let offer = offers[0];
                 if (offer.email != req.res.usuario) { //El usuario no es el propietario
-                    let criterio = {"offer_id": offer._id, "interesado": req.res.email};
-                    gestorBD.obtenerConversacion(criterio, function (conversacion) {
+                    let criterio2 = {"offer_id": gestorBD.mongo.ObjectID(req.params.id), "interesado": req.res.usuario};
+                    gestorBD.obtenerConversacion(criterio2, function (conversacion) {
 
 
                         if (conversacion.length == 0) { //No existe la conversación
                             let conversacion = {
+                                "nombreOferta": offer.title,
                                 "propietario": offer.email,
                                 "offer_id": offer._id,
                                 "interesado": req.res.usuario,
@@ -109,42 +113,122 @@ module.exports = function (app, gestorBD) {
                                 } else {
                                     res.status(200);
                                     res.json({
-                                        mensajes: result.mensajes
+                                        mensajes: result.mensajes,
+                                        idConver: result._id
                                     })
                                 }
                             })
                         } else { //Si existe la conversación
                             res.status(200);
                             res.json({
-                                mensajes: conversacion[0].mensajes
+                                mensajes: conversacion[0].mensajes,
+                                idConver: conversacion[0]._id
                             })
                         }
                     });
 
 
                 } else {//El usuario es el propietario
-                    let interesado = req.body.interesado;
-                    let criterio3 = {
-                        "offer_id": gestorBD.mongo.ObjectID(req.params.id),
-                        "propietario": req.res.usuario,
-                        "interesado": interesado
-                    };
-                    gestorBD.obtenerConversacion(criterio3, function (conversacion) {
-                        if (conversacion.length == 0) {
-                            res.status(500)
-                            res.json({
-                                error: "Esta conversacion no existe"
-                            })
-                        } else {
-                            res.status(200)
-                            res.json({
-                                mensajes: conversacion[0].mensajes
-                            });
-                        }
+                   res.status(500)
+                    res.send({
+                        error:"Siendo propietario de una oferta no puedes mandar mensaje a una oferta por primera vez"
                     });
                 }
             }
         });
+    });
+
+
+
+    /**
+     * Método get que obtiene todas las conversaciones
+     * de un usuario
+     */
+    app.get("/api/offer/conver",function (req,res) {
+       console.log("si");
+
+        let email = req.res.usuario
+        let criterio = {$or:[{"propietario":email},{"interesado":email}]}
+        gestorBD.obtenerConversacion(criterio,function (conversaciones) {
+            if(conversaciones == null){
+                res.status(500);
+                res.json({
+                    error: "se ha producido un error"
+                })
+            }
+            else{
+                res.status(200)
+                res.json({
+                    conversaciones:conversaciones
+                })
+            }
+        })
+    })
+
+    /**
+     * Metodo get que obtiene una conversacion
+     */
+    app.get("/api/offer/conver/:idConver",function (req,res) {
+        let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.idConver)}
+        gestorBD.obtenerConversacion(criterio,function (conver) {
+            if( conver == null){
+                res.status(500);
+                res.json({
+                    error: "se ha producido un error"
+                })
+            }
+            if(conver.length == 0){
+                res.status(500);
+                res.json({
+                    error: "No existe esa conversación"
+                })
+            }
+            else {
+                res.status(200);
+                res.json({
+                    conver: conver[0]
+                })
+            }
+        })
+    })
+    /**
+     * Método delete que elimina una conversacion
+     * dada su id
+     */
+    app.delete("/api/offer/conver:id",function (req,res) {
+        let email = req.res.usuario;
+        let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)}
+        gestorBD.obtenerConversacion(criterio,function (conver) {
+            if( conver == null){
+                res.status(500);
+                res.json({
+                    error: "se ha producido un error"
+                })
+            }
+            if(conver.length == 0){
+                res.status(500);
+                res.json({
+                    error: "No existe esa conversación"
+                })
+            }
+            if(conver[0].propietario != email && conver[0].interesado != email){
+                res.status(500);
+                res.json({
+                    error: "No perteneces a esa conversación"
+                })
+            }
+            else{
+                gestorBD.eliminarConversacion(critero,function (result) {
+                    if ( result == null ){
+                        res.status(500);
+                        res.json({error : "se ha producido un error"})
+                    } else {
+                        res.status(200);
+                        res.send(JSON.stringify(result));
+                    }
+                })
+            }
+        })
     });
 
 
