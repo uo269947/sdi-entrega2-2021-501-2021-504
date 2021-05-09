@@ -112,7 +112,7 @@ app.use("/offer/delete", routerUsuarioPropietario);
 
 //router destacarOferta
 let routerDestacarOferta = express.Router();
-routerUsuarioPropietario.use(function (req, res, next) {
+routerDestacarOferta.use(function (req, res, next) {
     console.log("routerDestacarOferta");
     let path = require('path');
     let id = path.basename(req.originalUrl);
@@ -190,6 +190,7 @@ app.use(function (err, req, res, next) {
 //Variables
 app.set('port', 8081);
 app.set('db', 'mongodb://admin:admin@cluster0-shard-00-00.urjej.mongodb.net:27017,cluster0-shard-00-01.urjej.mongodb.net:27017,cluster0-shard-00-02.urjej.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-ojwuzg-shard-0&authSource=admin&retryWrites=true&w=majority');
+//app.set('db', 'mongodb://admin:admin@tiendamusica-shard-00-00.jf1bc.mongodb.net:27017,tiendamusica-shard-00-01.jf1bc.mongodb.net:27017,tiendamusica-shard-00-02.jf1bc.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-kt6g25-shard-0&authSource=admin&retryWrites=true&w=majority');
 app.set('crypto', crypto);
 app.set('clave', 'abcdefg');
 
