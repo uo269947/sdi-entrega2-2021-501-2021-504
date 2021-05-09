@@ -32,6 +32,7 @@
            },
            error : function (error) {
                Cookies.remove('token');
+               console.log("eror");
                $("#widget-login")
                    .prepend("<div class='alert alert-danger'>Usuario no encontrado </div>");
            }
@@ -82,10 +83,9 @@
     });
 
 
-      setInterval(function(){
-
-          cargarMensajes()
-      }, 3000)
+      setInterval(
+          cargarMensajes
+      , 3000)
 
 
 </script>
