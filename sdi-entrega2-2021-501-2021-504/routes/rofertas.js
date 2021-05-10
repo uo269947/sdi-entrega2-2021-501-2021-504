@@ -239,30 +239,31 @@ module.exports = function(app, swig, gestorBD) {
                 res.redirect("/offer/otherOfferList" +
                     "?mensaje=No tienes dinero suficiente" +
                     "&tipoMensaje=alert-danger ");
-            req.session.money-=oferta.price;
-            oferta.comprador=req.session.usuario;
-            gestorBD.modificarOferta(criterio,oferta,function (result) { //Modificamos el comprador de la oferta
-                if (result == null) {
-                    res.redirect("/offer/otherOfferList" +
-                        "?mensaje=Error al comprar oferta" +
-                        "&tipoMensaje=alert-danger ");
-                } else {
-                    let usuario = {
-                        money:req.session.money
+            else {
+                req.session.money-=oferta.price;
+                oferta.comprador=req.session.usuario;
+                gestorBD.modificarOferta(criterio,oferta,function (result) { //Modificamos el comprador de la oferta
+                    if (result == null) {
+                        res.redirect("/offer/otherOfferList" +
+                            "?mensaje=Error al comprar oferta" +
+                            "&tipoMensaje=alert-danger ");
+                    } else {
+                        let usuario = {
+                            money:req.session.money
+                        }
+                        let criterio2 = {"email":req.session.usuario}
+                        gestorBD.modificarUsuario(criterio2,usuario,function (result) {
+                            if (result == null)
+                                res.redirect("/offer/otherOfferList" +
+                                    "?mensaje=Error al comprar oferta" +
+                                    "&tipoMensaje=alert-danger ");
+                            else
+                                res.redirect("/offer/otherOfferList");
+
+                        })
                     }
-                    let criterio2 = {"email":req.session.usuario}
-                    gestorBD.modificarUsuario(criterio2,usuario,function (result) {
-                        if (result == null)
-                            res.redirect("/offer/otherOfferList" +
-                                "?mensaje=Error al comprar oferta" +
-                                "&tipoMensaje=alert-danger ");
-                         else
-                            res.redirect("/offer/otherOfferList");
-
-                    })
-                }
-            })
-
+                })
+            }
         });
 
     });

@@ -127,8 +127,18 @@ module.exports = function(app,swig,gestorBD) {
      * Petición post que elimina los usuarios seleccionados en el html
      */
     app.post("/usuario/delete", function(req, res) {
-        let criterio = {"email" : {"$in" : req.body.idChecked}};
+        let usersChecked;
+        if (typeof req.body.idChecked !== "string") {
+            usersChecked = req.body.idChecked;
+        }
+        else {
+            usersChecked = new Array();
+            usersChecked.push(req.body.idChecked);
+        }
+        let criterio = {email : {"$in" : usersChecked}};
+        console.log(req.body.idChecked);
         gestorBD.eliminarUsuarios(criterio,function(users){
+            console.log(users);
             if ( users === null || users.length <= 0){
                 res.redirect("/usuario/list?mensaje=Error al eliminar usuarios");
             } else {
