@@ -98,7 +98,16 @@ module.exports = function(app, swig, gestorBD) {
             if ( offers == null ){
                 res.send("Error al eliminar oferta");
             } else {
-                res.redirect("/offer/myOfferList");
+                let criterio2 = {"offer_id" : gestorBD.mongo.ObjectID(req.params.id) };
+              gestorBD.eliminarConversacion(criterio2,function (convers) {
+                  if(convers==null){
+                      res.send("Error al eliminar las conversaciones de la oferta");
+                  }
+                  else{
+                      res.redirect("/offer/myOfferList");
+                  }
+              })
+
             }
         });
     });
@@ -168,8 +177,8 @@ module.exports = function(app, swig, gestorBD) {
             if ( offers == null ){
                 res.send("Error al obtener ofertas");
             } else {
-                let ultimaPg = total/4;
-                if (total % 4 > 0 ){ // Sobran decimales
+                let ultimaPg = total/5;
+                if (total % 5 > 0 ){ // Sobran decimales
                     ultimaPg = ultimaPg+1;
                 }
                 let paginas=[];
@@ -239,30 +248,31 @@ module.exports = function(app, swig, gestorBD) {
                 res.redirect("/offer/otherOfferList" +
                     "?mensaje=No tienes dinero suficiente" +
                     "&tipoMensaje=alert-danger ");
-            req.session.money-=oferta.price;
-            oferta.comprador=req.session.usuario;
-            gestorBD.modificarOferta(criterio,oferta,function (result) { //Modificamos el comprador de la oferta
-                if (result == null) {
-                    res.redirect("/offer/otherOfferList" +
-                        "?mensaje=Error al comprar oferta" +
-                        "&tipoMensaje=alert-danger ");
-                } else {
-                    let usuario = {
-                        money:req.session.money
+            else {
+                req.session.money-=oferta.price;
+                oferta.comprador=req.session.usuario;
+                gestorBD.modificarOferta(criterio,oferta,function (result) { //Modificamos el comprador de la oferta
+                    if (result == null) {
+                        res.redirect("/offer/otherOfferList" +
+                            "?mensaje=Error al comprar oferta" +
+                            "&tipoMensaje=alert-danger ");
+                    } else {
+                        let usuario = {
+                            money:req.session.money
+                        }
+                        let criterio2 = {"email":req.session.usuario}
+                        gestorBD.modificarUsuario(criterio2,usuario,function (result) {
+                            if (result == null)
+                                res.redirect("/offer/otherOfferList" +
+                                    "?mensaje=Error al comprar oferta" +
+                                    "&tipoMensaje=alert-danger ");
+                            else
+                                res.redirect("/offer/otherOfferList");
+
+                        })
                     }
-                    let criterio2 = {"email":req.session.usuario}
-                    gestorBD.modificarUsuario(criterio2,usuario,function (result) {
-                        if (result == null)
-                            res.redirect("/offer/otherOfferList" +
-                                "?mensaje=Error al comprar oferta" +
-                                "&tipoMensaje=alert-danger ");
-                         else
-                            res.redirect("/offer/otherOfferList");
-
-                    })
-                }
-            })
-
+                })
+            }
         });
 
     });
