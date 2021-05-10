@@ -34,6 +34,7 @@
 <script>
     let token;
     let URLbase = "https://localhost:8081/api";
+    var actualizar=false;
     $("#contenedor-principal").load( "widget-login.html");
     if ( Cookies.get('token') != null ){
         token = Cookies.get('token');
