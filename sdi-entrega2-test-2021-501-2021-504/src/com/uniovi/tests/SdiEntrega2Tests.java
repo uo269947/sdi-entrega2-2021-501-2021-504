@@ -51,9 +51,9 @@ public class SdiEntrega2Tests {
 	// En MACOSX (Debe ser la versiÃ³n 65.0.1 y desactivar las actualizacioens
 	// automÃ¡ticas):
 	static String PathFirefox65 = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
-	//static String Geckdriver024 = "C:\\Users\\Eric\\Desktop\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
-	 static String Geckdriver024 =
-	 "C:\\Users\\aleex\\Desktop\\UniTercero2\\SDI\\Material\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
+	static String Geckdriver024 = "C:\\Users\\Eric\\Desktop\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
+	// static String Geckdriver024 =
+	// "C:\\Users\\aleex\\Desktop\\UniTercero2\\SDI\\Material\\PL-SDI-Sesión5-material\\geckodriver024win64.exe";
 
 	// static String Geckdriver022 =
 	// "/Users/delacal/Documents/SDI1718/firefox/geckodriver023mac";
@@ -118,6 +118,7 @@ public class SdiEntrega2Tests {
 
 	// PR01. Resgitro de Usuario con datos validos
 	@Test
+
 	public void PR01() {
 		//Iniciamos sesion con un email que no existe en la pagina
 		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
@@ -305,6 +306,7 @@ public class SdiEntrega2Tests {
 	public void PR15() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+
 		PO_View.checkElement(driver, "h2", "Mis Ofertas");
 		PO_HomeView.clickOption(driver, "offer/add", "class", "btn btn-primary");
 		PO_PrivateView.fillFormAddOffer(driver, "oferta", "test", 20, false);
