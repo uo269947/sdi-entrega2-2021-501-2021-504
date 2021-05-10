@@ -2,6 +2,9 @@
 let express = require('express');
 let app = express();
 
+let fs = require('fs');
+let https = require('https');
+
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Credentials", "true");
@@ -177,7 +180,7 @@ require("./routes/rofertas.js")(app, swig, gestorBD);
 require("./routes/rusuarios.js")(app, swig, gestorBD);
 require("./routes/rapiusuarios.js")(app,gestorBD);
 require("./routes/rapiofertas.js")(app,gestorBD);
-require("./routes/rapipruebas.js")(app,gestorBD);
+//require("./routes/rapipruebas.js")(app,gestorBD);
 app.use(function (err, req, res, next) {
     console.log("Error producido: " + err);//mostramos el error en consola
     if (!res.headersSent) {
@@ -209,6 +212,9 @@ app.get('/usuario', function (req, res) {
         res.redirect('/inicio');
 })
 
-app.listen(app.get('port'), function () {
+https.createServer({
+    key: fs.readFileSync('certificates/alice.key'),
+    cert: fs.readFileSync('certificates/alice.crt')
+}, app).listen(app.get('port'), function() {
     console.log("Servidor activo");
-})
+});

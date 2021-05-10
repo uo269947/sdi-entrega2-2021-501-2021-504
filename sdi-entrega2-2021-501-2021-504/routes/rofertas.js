@@ -116,12 +116,7 @@ module.exports = function(app, swig, gestorBD) {
      * Petición get que destaca la oferta indicada por su identificador
      */
     app.get("/offer/destacar/:id", function(req, res) {
-        if(req.session.money<20){
-            res.redirect("/offer/myOfferList" +
-                "?mensaje=No tienes suficiente dinero para destacar la oferta" +
-                "&tipoMensaje=alert-danger ");
-            return;
-        }
+
         req.session.money-=20
         let criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
         let offer = {"destacada":true};
@@ -242,7 +237,7 @@ module.exports = function(app, swig, gestorBD) {
                     "&tipoMensaje=alert-danger ");
             if(oferta.buyer != null ) //Comprobamos que no esté comprada
                 res.redirect("/offer/otherOfferList" +
-                    "?mensaje=Lo siento esta oferta ya está comprda" +
+                    "?mensaje=Lo siento esta oferta ya está comprada" +
                     "&tipoMensaje=alert-danger ");
             if(parseInt(oferta.price) > req.session.money) //comprobamos si el usuario tiene dinero suficiente
                 res.redirect("/offer/otherOfferList" +
