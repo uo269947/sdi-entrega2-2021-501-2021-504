@@ -1,4 +1,4 @@
-module.exports = function(app,gestorBD){
+module.exports = function(app,gestorBD,logger){
 
     app.post("/api/autenticar/",function (req,res) {
 
@@ -11,6 +11,7 @@ module.exports = function(app,gestorBD){
         }
         gestorBD.obtenerUsuarios(criterio,function (usuarios) {
             if(usuarios==null || usuarios.length==0){
+                logger.error("Error al obtener usuasrios");
                 res.status(401); //unauthorized
                 res.json({
                     autenticado:false
@@ -24,6 +25,7 @@ module.exports = function(app,gestorBD){
                 if(req.session.rol == "usuario"){
                     req.session.money=usuarios[0].money;
                 }
+                logger.info(req.session.usuario+" autenticado");
                 res.status(200);
                 res.json({
                     autenticado:true,

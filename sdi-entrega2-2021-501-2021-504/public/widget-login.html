@@ -37,7 +37,6 @@
             },
             dataType: 'json',
             success: function (respuesta) {
-                email= $("#email").val();
                 token = respuesta.token;
                 Cookies.set('token', respuesta.token);
                 $("#contenedor-principal").load("widget-ofertas.html");
