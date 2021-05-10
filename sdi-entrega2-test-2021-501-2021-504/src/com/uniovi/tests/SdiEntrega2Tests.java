@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.openqa.selenium.By;
 //Paquetes Selenium 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -116,12 +117,13 @@ public class SdiEntrega2Tests {
 	}
 
 	// PR01. Resgitro de Usuario con datos validos
-	
-	public void PR01() {	
-
+	@Test
+	public void PR01() {
+		//Iniciamos sesion con un email que no existe en la pagina
 		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
 		emailRegistrado = "prueba" + Math.random() * 10 + "@uniovi.es";
 		PO_RegisterView.fillForm(driver, emailRegistrado, "Charles", "Leclerc", "ferrari12", "ferrari12");
+		// Comprobamos que te lleva a la pagina de ofertas propias
 		PO_View.checkElement(driver, "h2", "Mis Ofertas");
 	}
 
@@ -131,6 +133,7 @@ public class SdiEntrega2Tests {
 	public void PR02() {
 		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
 		PO_RegisterView.fillForm(driver, "", "", "", "ferrari12", "ferrari12");
+		// Comprobamos que muestra el error
 		SeleniumUtils.textoPresentePagina(driver, "No puede dejar campos vacíos");
 		
 	}
@@ -143,6 +146,7 @@ public class SdiEntrega2Tests {
 		emailRegistrado ="prueba" + Math.random() * 10+ "@uniovi.es";
 		PO_RegisterView.fillForm(driver, emailRegistrado, "Charles", "Leclerc",
 				"ferrari12", "ferrari123");
+		// Comprobamos que muestra el error
 		SeleniumUtils.textoPresentePagina(driver, "Las contraseñas deben coincidir");
 	}
 
@@ -151,6 +155,7 @@ public class SdiEntrega2Tests {
 	public void PR04() {
 		PO_HomeView.clickOption(driver, "registrarse", "class", "btn btn-primary");
 		PO_RegisterView.fillForm(driver, "prueba@prueba.com", "Jose Antonio", "Rendueles", "ferrari12", "ferrari12");
+		// Comprobamos que muestra el error
 		SeleniumUtils.textoPresentePagina(driver, "Email ya registrado en la pagina");
 	}
 
@@ -168,6 +173,7 @@ public class SdiEntrega2Tests {
 	public void PR06() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
 		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba121212");
+		// Comprobamos que muestra el error
 		PO_View.checkElement(driver, "text", "Email o password incorrecto");
 	}
 
@@ -226,7 +232,6 @@ public class SdiEntrega2Tests {
 		PO_View.checkElement(driver, "text","prueba@prueba.com" );
 		PO_View.checkElement(driver, "text","prueba2@prueba.com" );
 		PO_View.checkElement(driver, "text","prueba3@prueba.com" );
-	//	PO_View.checkElement(driver, "text",emailRegistrado );
 
 	}
 
@@ -237,8 +242,13 @@ public class SdiEntrega2Tests {
 		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
 		PO_View.checkElement(driver, "h2", "Usuarios del sistema");
 		
-		PO_HomeView.clickOption(driver, "prueba@prueba.com", "class", "checkbox");
-		PO_HomeView.clickOption(driver, "usuario/delete", "class", "btn btn-primary");
+		List<WebElement> checkboxes = driver.findElements(By.name("idChecked"));
+		assertEquals(3, checkboxes.size());
+		
+		checkboxes.get(0).click();
+		
+		WebElement elemento = driver.findElement(By.name("delete"));
+        elemento.click();
 		
 		SeleniumUtils.textoNoPresentePagina(driver,  "prueba@prueba.com");
 		SeleniumUtils.textoPresentePagina(driver,  "prueba2@prueba.com");
@@ -252,8 +262,13 @@ public class SdiEntrega2Tests {
 		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
 		PO_View.checkElement(driver, "h2", "Usuarios del sistema");
 		
-		PO_HomeView.clickOption(driver, "prueba3@prueba.com", "class", "checkbox");
-		PO_HomeView.clickOption(driver, "usuario/delete", "class", "btn btn-primary");
+		List<WebElement> checkboxes = driver.findElements(By.name("idChecked"));
+		assertEquals(3, checkboxes.size());
+		
+		checkboxes.get(2).click();
+			
+		WebElement elemento = driver.findElement(By.name("delete"));
+        elemento.click();
 		
 		SeleniumUtils.textoPresentePagina(driver,  "prueba@prueba.com");
 		SeleniumUtils.textoPresentePagina(driver,  "prueba2@prueba.com");
@@ -267,8 +282,16 @@ public class SdiEntrega2Tests {
 		PO_LoginView.fillForm(driver, "admin@email.com", "admin");
 		PO_View.checkElement(driver, "h2", "Usuarios del sistema");
 		
-		PO_HomeView.clickOption(driver, "prueba3@prueba.com", "class", "checkbox");
-		PO_HomeView.clickOption(driver, "usuario/delete", "class", "btn btn-primary");
+		List<WebElement> checkboxes = driver.findElements(By.name("idChecked"));
+		assertEquals(3, checkboxes.size());
+		
+		checkboxes.get(0).click();
+		checkboxes.get(1).click();
+		checkboxes.get(2).click();
+		
+		
+		WebElement elemento = driver.findElement(By.name("delete"));
+        elemento.click();
 		
 		SeleniumUtils.textoNoPresentePagina(driver,  "prueba@prueba.com");
 		SeleniumUtils.textoNoPresentePagina(driver,  "prueba2@prueba.com");
@@ -281,10 +304,11 @@ public class SdiEntrega2Tests {
 	@Test
 	public void PR15() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
-		PO_LoginView.fillForm(driver, "prueba@prueba.es", "prueba");
-		PO_PrivateView.clickAddOffer(driver);
-		PO_PrivateView.fillFormAddOffer(driver, "Movil", "Samsung", 10, false);
-		PO_View.checkElement(driver, "text", "Movil");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
+		PO_HomeView.clickOption(driver, "offer/add", "class", "btn btn-primary");
+		PO_PrivateView.fillFormAddOffer(driver, "oferta", "test", 20, false);
+		SeleniumUtils.textoPresentePagina(driver,  "oferta");
 	}
 
 	// PR16. Ir al formulario de alta de oferta, rellenarla con datos inválidos
@@ -422,13 +446,12 @@ public class SdiEntrega2Tests {
 	@Test
 	public void PR23() {
 		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
-		PO_LoginView.fillForm(driver, emailRegistrado, "ferrari12");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
 		PO_HomeView.clickOption(driver, "offer/otherOfferList", "h2", "Comprar Ofertas");
 
-		PO_PrivateView.buyOfferByTitle(driver, "Movil");
-
+		PO_PrivateView.buyOfferByTitle(driver, "oferta3");
 		
-		PO_PrivateView.checkElement(driver, "text", "90"); 
+		PO_PrivateView.checkElement(driver, "text", "70"); 
 	}
 
 	// PR24. Sobre una búsqueda determinada (a elección de desarrollador), comprar
@@ -438,7 +461,21 @@ public class SdiEntrega2Tests {
 	// correctamente en la vista del comprador.
 	@Test
 	public void PR24() {
-		assertTrue("PR24 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
+		PO_HomeView.clickOption(driver, "offer/add", "class", "btn btn-primary");
+		PO_PrivateView.fillFormAddOffer(driver, "test", "test", 100, false);
+		SeleniumUtils.textoPresentePagina(driver,  "oferta");
+		PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");
+		PO_View.checkElement(driver, "h2", "Identificación de usuario");
+		
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba2@prueba.com", "12345678");
+		PO_HomeView.clickOption(driver, "offer/otherOfferList", "h2", "Comprar Ofertas");
+		
+		PO_PrivateView.buyOfferByTitle(driver, "test");	
+		PO_PrivateView.checkElement(driver, "text", "0"); 
 	}
 
 	// PR25.Sobre una búsqueda determinada (a elección de desarrollador), intentar
@@ -448,13 +485,34 @@ public class SdiEntrega2Tests {
 	// mensaje de saldo no suficiente
 	@Test
 	public void PR25() {
-		assertTrue("PR25 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_View.checkElement(driver, "h2", "Mis Ofertas");
+		PO_HomeView.clickOption(driver, "offer/add", "class", "btn btn-primary");
+		PO_PrivateView.fillFormAddOffer(driver, "test", "test", 110, false);
+		SeleniumUtils.textoPresentePagina(driver,  "oferta");
+		PO_HomeView.clickOption(driver, "desconectarse", "class", "btn btn-primary");
+		PO_View.checkElement(driver, "h2", "Identificación de usuario");
+		
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba2@prueba.com", "12345678");
+		PO_HomeView.clickOption(driver, "offer/otherOfferList", "h2", "Comprar Ofertas");
+		
+		PO_PrivateView.buyOfferByTitle(driver, "test");	
+		SeleniumUtils.textoPresentePagina(driver, "No tienes dinero suficiente");
 	}
 
-	// PR26. Sin hacer /
+	// PR26. Comprobar que la lista de ofertas compradas muestra correctamente las del usuario /
 	@Test
 	public void PR26() {
-		assertTrue("PR26 sin hacer", false);
+		PO_HomeView.clickOption(driver, "identificarse", "class", "btn btn-primary");
+		PO_LoginView.fillForm(driver, "prueba@prueba.com", "12345678");
+		PO_HomeView.clickOption(driver, "offer/otherOfferList", "h2", "Comprar Ofertas");
+		
+		PO_PrivateView.buyOfferByTitle(driver, "oferta2");	
+		
+		PO_HomeView.clickOption(driver, "offer/boughtOfferList", "h2", "Ofertas Compradas");
+		SeleniumUtils.textoPresentePagina(driver, "oferta2");
 	}
 
 	/*
