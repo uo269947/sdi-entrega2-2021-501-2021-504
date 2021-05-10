@@ -98,7 +98,16 @@ module.exports = function(app, swig, gestorBD) {
             if ( offers == null ){
                 res.send("Error al eliminar oferta");
             } else {
-                res.redirect("/offer/myOfferList");
+                let criterio2 = {"offer_id" : gestorBD.mongo.ObjectID(req.params.id) };
+              gestorBD.eliminarConversacion(criterio2,function (convers) {
+                  if(convers==null){
+                      res.send("Error al eliminar las conversaciones de la oferta");
+                  }
+                  else{
+                      res.redirect("/offer/myOfferList");
+                  }
+              })
+
             }
         });
     });
