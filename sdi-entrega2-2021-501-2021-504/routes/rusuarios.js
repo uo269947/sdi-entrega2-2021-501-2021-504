@@ -136,14 +136,37 @@ module.exports = function(app,swig,gestorBD) {
             usersChecked.push(req.body.idChecked);
         }
         let criterio = {email : {"$in" : usersChecked}};
-        console.log(req.body.idChecked);
+
         gestorBD.eliminarUsuarios(criterio,function(users){
-            console.log(users);
-            if ( users === null || users.length <= 0){
+
+            if ( users === null ){
                 res.redirect("/usuario/list?mensaje=Error al eliminar usuarios");
-            } else {
-                res.redirect("/usuario/list?mensaje=Usuarios eliminados");
             }
+            if ( users.length== 0 ){
+                res.redirect("/usuario/list?mensaje=Ningun usuario eliminado");
+            } else {
+                gestorBD.eliminarOffer(criterio,function (offers) { //Eliminamos las ofertas del usuario
+                    if ( offers === null){
+                        res.redirect("/usuario/list?mensaje=Error al eliminar ofertas de los usuarios");
+                    }
+                    else{
+                        let criterio2={$or:[
+                                {propietario : {$in : usersChecked}}
+                                            ,{interesado:{$in:usersChecked}}]}
+
+                        gestorBD.eliminarConversacion(criterio2,function (convers) { //Eliminamos las conversaciones del usuario
+                            if ( convers === null ){
+                                res.redirect("/usuario/list?mensaje=Error al eliminar conversaciones de los usuarios");
+                            }
+                            else{
+                                res.redirect("/usuario/list?mensaje=Usuarios eliminados");
+                            }
+                        })
+                    }
+                })
+
+            }
+
         });
     });
 

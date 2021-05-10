@@ -168,8 +168,8 @@ module.exports = function(app, swig, gestorBD) {
             if ( offers == null ){
                 res.send("Error al obtener ofertas");
             } else {
-                let ultimaPg = total/4;
-                if (total % 4 > 0 ){ // Sobran decimales
+                let ultimaPg = total/5;
+                if (total % 5 > 0 ){ // Sobran decimales
                     ultimaPg = ultimaPg+1;
                 }
                 let paginas=[];
